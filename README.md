@@ -30,18 +30,25 @@ To get the repo, clone (or manually download and unzip) this Tympan_CHAPRO direc
 
 You can then open these examples in the Arduino IDE via the "File Menu" and "Open".
 
+## HARDWARE
+
+These sketches are made for Tympan RevE.  Initially (as of 8/26/2021) these sketches do not employ the Tympan earpieces.  They default to using the microphones built into the hardware, so they will be noisy.  The processed audio is presented via the black headphone jack.
+
+We plan on adding support for the earpieces shortly.
+
 ## COMPILING
 
 If you have never compiled and run a Tympan program before, you should see the Tympan Getting Started docs.  The short version, however, is:
 
 1) Start the Arduino IDE
-    * After it loads, open the "sketch" (program) that you would like to run
-    * At any point, plug in the Tympan via USB and turn it on
+    * Open one of these Tympan_CHAPRO programs ("sketches")
+    * On Windows, you hopefully placed them in Documents\Arduino\Tympan_CHAPRO
 
 2) Tell the Arduino IDE that you are compiling for Tympan RevE (which is a Teensy 4.1)
     * Under the "Tools" menu, choose "Board", "Teensyduino", "Teensy 4.1"
 
 3) Compile your program and upload to the Tympan
+    * At any point, plug in the Tympan via USB and turn it on
     * Under the "Sketch" menu, press "Upload" (which will compile and upload to the Tympan)
     * Alternatively, press the right-arrow in the toolbar.
     * If it compiles successfully, it will upload the program to the Tympan
