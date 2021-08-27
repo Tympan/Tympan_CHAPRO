@@ -71,10 +71,14 @@ CHAPRO includes many test programs, including files like tst_nfc.c and tst_gha.c
 
 **2) Add a New test_xxxx.h File**:  If you are starting with chapro_test_GHA, note that there is a file test_gha.h.  That file built from the CHAPRO file tst_gha.c.  We are going to follow the same pattern for your new program.  If you are converting tst_gfsc.c, create a new file that you call tst_gfsc.h.  You create new files in the Arduino IDE using the little down-carrot button on the far right of the Arduino window.
 
-**3) Copy-Paste Your Code and Comment Out Unneeded Items**:  Open your own CHAPRA file (tst_gfsc.c) and copy-paste the contents into your new file (test_gfsc.h).  Then, following the pattern the in the existing example (test_gha.h), comment out all the lines that are not needed for making it run on the Tympan.
+**3) Copy-Paste Your Code and Comment Out Unneeded Items**:  Open your own CHAPRA file (tst_gfsc.c) and copy-paste the contents into your new file (test_gfsc.h).  Then, following the pattern the in the existing example (test_gha.h), comment out all the lines that are not needed for making it run on the Tympan.  Finally add the `#ifndef` and `#define` at the top of the file and add #endif at the end.  Again, use test_gha.h as a model.
 
-**4) Change all #include to Point to Your test_xxxx.h File**:  With your coversion of your new 
+**4) Point to Your test_xxxx.h File**:  In the other tabs of your sketch, note the #include lines at the top.  Find the ones that point to test_gha.h and point them to your new file (test_gfsc.h).
 
+**5) Adapt AudioEffectBTNRH.h**: Click on the tab or AudioEffectBTNRH.  This is the file that calls upon functions in your new test_gfsc.h.  In particular, look at the method called `setup()` where it calls the functions `configure()` and `prepare()`.  Is this still correct for the function names in your test_gsfc.h?  Similarly, scroll a bit further down to find the method called `applyMyAlgorithm()`.  Note that it calls `process_chunk()`.  Is this still correct for the function names in your test_gsfc.h?  Change the function names here in AudioEffectBTNRH.h (or in test_gsfc.h) as needed to make everything agree.
 
+**6) Delete Your Old test_xxxx.h File**:  When you're done with your old test_gha.h file, you can remove it from the sketch.  You can do this by deleting it.  Go under the down-carrot button on the far right of the Arduino window and choose "Delete".
 
+**7) Copile and Debug**:  You're done!  Now you can iteratively compile and debug until it runs.  Since there is no deubber in Arduino, you must debug by printing lines to the Serail Monitor.  You can use the Arduino `println()` command, like: `Serial.println("My string...and ere's a number: " + String(i));`.  Or you can use trusty old `printf()`.
 
+Good luck!
