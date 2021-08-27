@@ -30,9 +30,11 @@ To get the repo, clone (or manually download and unzip) this Tympan_CHAPRO direc
 
 You can then open these examples in the Arduino IDE via the "File Menu" and "Open".
 
-## HARDWARE
+## COMPATIBLE HARDWARE
 
-These sketches are made for Tympan RevE.  Initially (as of 8/26/2021) these sketches do not employ the Tympan earpieces.  They default to using the microphones built into the hardware, so they will be noisy.  The processed audio is presented via the black headphone jack.
+**Tympan Version:** These sketches are made for Tympan RevE.  They will compile and start to run on a Tympan RevD, but the Tympan RevD is too slow to execute most of the algorithms as they are written in CHAPRO.  
+
+**Tympan Earpieces:** Initially (as of 8/26/2021) these sketches do not employ the Tympan earpieces.  They default to using the microphones built into the hardware, so they will be noisy.  The processed audio is presented via the black headphone jack.
 
 We plan on adding support for the earpieces shortly.
 
@@ -61,7 +63,17 @@ If you have never compiled and run a Tympan program before, you should see the T
     * Go under the "Tools" menu and choose "Serial Monitor"
     * Alternatively, press the magnifying glass button on the far right of the Arduino IDE window
 
+## MAKING YOUR OWN EXAMPLES
 
+CHAPRO includes many test programs, including files like tst_nfc.c and tst_gha.c, which were the basis for the examples in this repo.  The process for making your own examples starts with these tst_xxxx.c examples in CHAPRO.  For these instructions, let's assume that you want to make a Tympan example based on the CHAPRO tst_gfsc.c program.
+
+**1) Start from an Existing Example**: Start from an existing Tympan_CHAPRO example, such as chapro_test_GHA.  Open it in the Arduino IDE and then do "Save As.." to save it under a new name.  If we are conferting tst_gfsc.c, then choose a name like chapro_test_gfsc.  (Be aware that the Arduino IDE will automatically create the directory for you and it will automatically copy over the other files, too.)
+
+**2) Add a New test_xxxx.h File**:  If you are starting with chapro_test_GHA, note that there is a file test_gha.h.  That file built from the CHAPRO file tst_gha.c.  We are going to follow the same pattern for your new program.  If you are converting tst_gfsc.c, create a new file that you call tst_gfsc.h.  You create new files in the Arduino IDE using the little down-carrot button on the far right of the Arduino window.
+
+**3) Copy-Paste Your Code and Comment Out Unneeded Items**:  Open your own CHAPRA file (tst_gfsc.c) and copy-paste the contents into your new file (test_gfsc.h).  Then, following the pattern the in the existing example (test_gha.h), comment out all the lines that are not needed for making it run on the Tympan.
+
+**4) Change all #include to Point to Your test_xxxx.h File**:  With your coversion of your new 
 
 
 
