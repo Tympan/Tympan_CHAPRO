@@ -79,10 +79,33 @@ CHAPRO includes many test programs, including files like tst_nfc.c and tst_gha.c
 
 **6) Delete Your Old test_xxxx.h File**:  When you're done with your old test_gha.h file, you can remove it from the sketch.  You can do this by deleting it.  Go under the down-carrot button on the far right of the Arduino window and choose "Delete".
 
-**7) Copile and Debug**:  You're done!  Now you can iteratively compile and debug until it runs.  Since there is no deubber in Arduino, you must debug by printing lines to the Serial Monitor.  You can use the Arduino `println()` command, like: `Serial.println("My string...and ere's a number: " + String(i));`.  Or you can use trusty old `printf()`.
+**7) Copile and Debug**:  You're done!  Now you can iteratively compile and debug until it runs.  Since there is no deubber in Arduino, you must debug by printing lines to the Serial Monitor.  You can use the Arduino `println()` command, like: `Serial.println("My string...and here is a number: " + String(i));`.  Or you can use trusty old `printf()`.
 
 Good luck!
 
-## MIXING CHAPRO AND TYMPAN ALGORITHM ELEMENTS
+## MIXING CHAPRO AND TYMPAN ALGORITHMS
 
-You can absolutely mix CHAPRO and Tympan audio processing elements.  In these examples, you will note that the CHAPRO algorithm has been wrapped into AudioEffectBTNRH.  This makes the CHAPRO algorithm look like any other Tympan audio class.  Therefore, you can plug in any othre Tympan audio classes before, after, or in parallel with the CHAPRO elements.  
+You can absolutely mix CHAPRO and Tympan audio processing elements.  In these examples, you will note that the CHAPRO algorithm has been wrapped into AudioEffectBTNRH.  This makes the CHAPRO algorithm look like any other Tympan audio class.  Therefore, you can plug in any othre Tympan audio classes before, after, or in parallel with the CHAPRO elements.
+
+As a basic example, here is how you might insert an adjustable gain block before the CHAPRO block:
+
+```
+//create audio objects
+AudioInputI2S_F32     audio_in(audio_settings);    
+AudioEffectGain_F32   gain1(audio_settings);       //here is a block from Tympan_Library
+AudioEffectBTNRH      BTNRH_alg1(audio_settings);  //see tab "AudioEffectBTNRH.h"
+AudioOutputI2S_F32    audio_out(audio_settings);   //always list last
+
+//connect the inputs to the gain alg
+AudioConnection_F32   patchCord1(audio_in,   0, gain1, 0);  //left input
+
+//connect the gain alg to the BTNRH alg
+AudioConnection_F32   patchCord2(gain1, 0, BTNRH_alg1, 0);  //processing
+
+//connect the BTNRH alg to the outputs
+AudioConnection_F32   patchCord3(BTNRH_alg1, 0, audio_out,  0);  //left output
+AudioConnection_F32   patchCord4(BTNRH_alg1, 0, audio_out,  1);  //right output, same as left
+```
+
+You can do this with any Tympan audio class.
+
