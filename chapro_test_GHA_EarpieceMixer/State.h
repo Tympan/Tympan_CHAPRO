@@ -26,7 +26,7 @@ class State : public TympanStateBase_UI { // look in TympanStateBase or TympanSt
 
     //look in TympanStateBase for more state variables!  (like, bool flag_printCPUandMemory)
     
-    //Put different gain settings (except those in the compressors) here to ease the updating of the GUI
+    //Put different gain settings here to ease the updating of the GUI
     //float input_gain_dB = 10.0;   //gain of the hardware PGA in the AIC
     float output_gain_dB = 0.0;  //gain of the hardware headphone amplifier in the AIC
     
