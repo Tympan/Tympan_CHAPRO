@@ -1,11 +1,11 @@
 /*
-   AudioEffectNFC
+   AudioEffectBTNRH
 
    Created: Ira Ray Jenkins, Creare, June 2021
             Chip Audette, OpenAudio, August 2021
 
    Based on MyAudioAlgorithm by Chip Audette, OpenAudio April 2017
-   Purpose: Demonstrate a port of tst_nfc.c from ChaPro to Tympan.
+   Purpose: Demonstrate a port of CHAPRO algorithm to Tympan
 
    MIT License.  use at your own risk.
 */
