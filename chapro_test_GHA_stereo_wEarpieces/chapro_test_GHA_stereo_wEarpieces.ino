@@ -1,3 +1,13 @@
+/*
+   chapro_test_GHA_stereo_wEarpieces
+
+   Created: Chip Audette, OpenAudio, September 2021
+
+   Purpose: Demonstrate a port of tst_gha.c from ChaPro to Tympan.
+
+   MIT License.  use at your own risk.
+*/
+
 
 //Include Arduino/Tympan related libraries
 #include <Arduino.h>
@@ -49,15 +59,13 @@ AudioOutputI2SQuad_F32  i2s_out(audio_settings);     //Digital audio *to* the Ty
 
 //connect the inputs to the BTNRH alg
 AudioConnection_F32  patchCord1(i2s_in, EarpieceShield::PDM_LEFT_FRONT, BTNRH_alg1, 0); //send to the earpiece
-AudioConnection_F32  patchCord2(i2s_in, EarpieceShield::PDM_RIGHT_FRONT, 1, BTNRH_alg2, 0);//send to the earpiece
-AudioConnection_F32  patchCord3(i2s_in, EarpieceShield::PDM_LEFT_FRONT, BTNRH_alg1, 0);   //send the same thing to the Tympan headphone jack
-AudioConnection_F32  patchCord4(i2s_in, EarpieceShield::PDM_RIGHT_FRONT, 1, BTNRH_alg2, 0);  //send the same thing to the Tympan headphone jack
+AudioConnection_F32  patchCord2(i2s_in, EarpieceShield::PDM_RIGHT_FRONT, BTNRH_alg2, 0);//send to the earpiece
 
 //connect the BTNRH alg to the outputs
-AudioConnection_F32 patchCord11(BTNRH_alg1, 0, audio_out,  0);  //left output
-AudioConnection_F32 patchCord12(BTNRH_alg2, 0, audio_out,  1);  //right output
-
-
+AudioConnection_F32     patchcord11(BTNRH_alg1, 0, i2s_out, EarpieceShield::OUTPUT_LEFT_TYMPAN);    //Tympan AIC, left output
+AudioConnection_F32     patchcord12(BTNRH_alg2, 0, i2s_out, EarpieceShield::OUTPUT_RIGHT_TYMPAN);   //Tympan AIC, right output
+AudioConnection_F32     patchcord13(BTNRH_alg1, 0, i2s_out, EarpieceShield::OUTPUT_LEFT_EARPIECE);  //Shield AIC, left output
+AudioConnection_F32     patchcord14(BTNRH_alg2, 0, i2s_out, EarpieceShield::OUTPUT_RIGHT_EARPIECE); //Shield AIC, right output
 
 // /////////////////////////  Start the Arduino-standard functions: setup() and loop()
 
@@ -86,19 +94,29 @@ void setup() { //this runs once at startup
     // Start the Tympan
     Serial.println("setup: Tympan enable...");
     myTympan.enable();
+    earpieceShield.enable();
 
     //setup DC-blocking highpass filter running in the ADC hardware itself
     float cutoff_Hz = 40.0;  //set the default cutoff frequency for the highpass filter
     myTympan.setHPFonADC(true,cutoff_Hz,audio_settings.sample_rate_Hz); //set to false to disble
 
     //Choose the desired input
-    myTympan.inputSelect(TYMPAN_INPUT_ON_BOARD_MIC);     // use the on board microphones
-    //myTympan.inputSelect(TYMPAN_INPUT_JACK_AS_MIC);    // use the microphone jack - defaults to mic bias 2.5V
-    //myTympan.inputSelect(TYMPAN_INPUT_JACK_AS_LINEIN); // use the microphone jack - defaults to mic bias OFF
+     if (true) {
+      //Use the Tympan Earpieces
+      Serial.println("setup(): Using Tympan Earpieces as Inputs");
+      myTympan.enableDigitalMicInputs(true);
+      earpieceShield.enableDigitalMicInputs(true);
+    } else {
+      //Use the PCB mics on the main Tympan board (for debugging only)
+      Serial.println("setup(): Using Tympan Built-In PCB Mics as Inputs");
+      myTympan.inputSelect(TYMPAN_INPUT_ON_BOARD_MIC);     // use the on board microphones (only on main board, not on AIC shield)
+      myTympan.setInputGain_dB(15.0); 
+    }
     
     //Set the desired volume levels
     myTympan.volume_dB(0);                   // headphone amplifier.  -63.6 to +24 dB in 0.5dB steps.
-    float input_gain_dB = 15.0;
+    earpieceShield.volume_dB(-10.0);     // headphone amplifier.  -63.6 to +24 dB in 0.5dB steps.
+    float input_gain_dB = 5.0;
     myTympan.setInputGain_dB(input_gain_dB); // set input volume, 0-47.5dB in 0.5dB setps
 
     //finish setup
