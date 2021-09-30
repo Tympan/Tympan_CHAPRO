@@ -31,7 +31,7 @@ EarpieceShield   earpieceShield(TympanRev::E, AICShieldRev::A);  //Note that Ear
 
 //create audio objects
 AudioInputI2SQuad_F32         i2s_in(audio_settings);        //Digital audio *from* the Tympan AIC.
-AudioEffectBTNRH    BTNRH_alg1(audio_settings);  //see tab "AudioEffectBTNRH.h"
+AudioEffectBTNRH              BTNRH_alg1(audio_settings);    //see tab "AudioEffectBTNRH.h"
 AudioOutputI2SQuad_F32        i2s_out(audio_settings);       //Digital audio *to* the Tympan AIC.  Always list last to minimize latency
 
 // Define audio connections.  Remember that, since we add the EarpieceShield, we actually now have four inputs and four outputs.
@@ -64,8 +64,6 @@ AudioConnection_F32 patchCord11(BTNRH_alg1, 0, i2s_out, EarpieceShield::OUTPUT_L
 AudioConnection_F32 patchCord12(BTNRH_alg1, 0, i2s_out, EarpieceShield::OUTPUT_RIGHT_EARPIECE);  //send to the right earpiece
 AudioConnection_F32 patchCord13(BTNRH_alg1, 0, i2s_out, EarpieceShield::OUTPUT_LEFT_TYMPAN);     //send the same thing to the Tympan headphone jack
 AudioConnection_F32 patchCord14(BTNRH_alg1, 0, i2s_out, EarpieceShield::OUTPUT_RIGHT_TYMPAN);    //send the same thing to the Tympan headphone jack
-
-
 
 // /////////////////////////  Start the Arduino-standard functions: setup() and loop()
 
