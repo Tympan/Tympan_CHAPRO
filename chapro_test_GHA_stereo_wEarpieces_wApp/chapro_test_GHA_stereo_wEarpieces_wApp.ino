@@ -1,8 +1,8 @@
 
 /*
-*   chapro_test_GHA_EarpieceMixer
+*   chapro_test_GHA_stereo_wEarpieces_wApp
 *
-*   Created: Chip Audette, OpenAudio, September 2021
+*   Created: Chip Audette/Haley Geithner, OpenAudio, September 2021
 *   Purpose: Uses BTNRH algorithms to process audio from a combination of microphones. 
 *            Uses Tympan Earpieces.  Includes App interaction. 
 *
