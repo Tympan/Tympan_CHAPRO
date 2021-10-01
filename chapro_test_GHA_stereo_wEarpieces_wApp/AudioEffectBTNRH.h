@@ -10,6 +10,9 @@
    MIT License.  use at your own risk.
 */
 
+#ifndef _AudioEffectBTNRH_h
+#define _AudioEffectBTNRH_h
+
 // Libraries that all Tympan Audio Effects should include
 #include <Arduino.h>
 #include "AudioStream_F32.h"
@@ -28,6 +31,9 @@ public:
     //CHAPRO-relevant data members
     void *cp[NPTR] = {0};  //Create a local version of CHA_PTR for use by each instance of this class.  NPTR is set in chapro.h???
     I_O io;                //Create a local version of I_O for use by each instance of this class.
+    
+    double* cha_dvar = ((double *)cp[_dvar]);
+    int* cha_ivar = ((int *)cp[_ivar]);
 
     //setup methods
     void setup(void)  { 
@@ -82,3 +88,5 @@ private:
     bool enabled = false;
 
 }; //end class definition for AudioEffectBTNRH
+
+#endif

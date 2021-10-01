@@ -1,22 +1,22 @@
 
 // Instantiate the audio classess
-AudioInputI2SQuad_F32       i2s_in(audio_settings);     //Digital audio in *from* the Teensy Audio Board ADC.
-EarpieceMixer_F32_UI        earpieceMixer(audio_settings);  //mixes earpiece mics, allows switching to analog inputs, mixes left+right, etc
-AudioEffectBTNRH        BTNRH_alg1(audio_settings);  //for processing the left.  See tab "AudioEffectBTNRH.h"
-AudioEffectBTNRH        BTNRH_alg2(audio_settings);  //for processing the right. See tab "AudioEffectBTNRH.h"
-AudioOutputI2SQuad_F32      i2s_out(audio_settings);    //Digital audio out *to* the Teensy Audio Board DAC.
-AudioSDWriter_F32_UI        audioSDWriter(audio_settings);//this is stereo by default
+AudioInputI2SQuad_F32      i2s_in(audio_settings);        //Digital audio in *from* the Teensy Audio Board ADC.
+EarpieceMixer_F32_UI       earpieceMixer(audio_settings); //mixes earpiece mics, allows switching to analog inputs, mixes left+right, etc
+AudioEffectBTNRH           BTNRH_alg1(audio_settings);    //for processing the left.  See tab "AudioEffectBTNRH.h"
+AudioEffectBTNRH           BTNRH_alg2(audio_settings);    //for processing the right. See tab "AudioEffectBTNRH.h"
+AudioOutputI2SQuad_F32     i2s_out(audio_settings);       //Digital audio out *to* the Teensy Audio Board DAC.
+AudioSDWriter_F32_UI       audioSDWriter(audio_settings); //this is stereo by default
 
 
-// Make all of the audio connections
-AudioConnection_F32         patchcord1(i2s_in,0,earpieceMixer,0);
-AudioConnection_F32         patchcord2(i2s_in,1,earpieceMixer,1);
-AudioConnection_F32         patchcord3(i2s_in,2,earpieceMixer,2);
-AudioConnection_F32         patchcord4(i2s_in,3,earpieceMixer,3);
+// Starting making the audio connections
+AudioConnection_F32        patchcord1(i2s_in,0,earpieceMixer,0); //connect raw audio to the EarpieceMixer (control front-rear, left-right mixing)
+AudioConnection_F32        patchcord2(i2s_in,1,earpieceMixer,1); //connect raw audio to the EarpieceMixer (control front-rear, left-right mixing)
+AudioConnection_F32        patchcord3(i2s_in,2,earpieceMixer,2); //connect raw audio to the EarpieceMixer (control front-rear, left-right mixing)
+AudioConnection_F32        patchcord4(i2s_in,3,earpieceMixer,3); //connect raw audio to the EarpieceMixer (control front-rear, left-right mixing)
 
 //connect the left and right outputs of the earpiece mixer to the two filter modules (one for left, one for right)
-AudioConnection_F32         patchCord11(earpieceMixer,  earpieceMixer.LEFT,  BTNRH_alg1, 0);   //connect the Left input to the BTNRH algorithm
-AudioConnection_F32         patchCord12(earpieceMixer,  earpieceMixer.RIGHT, BTNRH_alg2, 0);   //connect the Right input to the BTNRH algorithm
+AudioConnection_F32        patchCord11(earpieceMixer,  earpieceMixer.LEFT,  BTNRH_alg1, 0);   //connect the Left input to the BTNRH algorithm
+AudioConnection_F32        patchCord12(earpieceMixer,  earpieceMixer.RIGHT, BTNRH_alg2, 0);   //connect the Right input to the BTNRH algorithm
 
 //Connect the gain modules to the outputs so that you hear the audio
 AudioConnection_F32        patchcord31(BTNRH_alg1, 0, i2s_out, EarpieceShield::OUTPUT_LEFT_TYMPAN);    //First AIC, Main tympan board headphone jack, left channel

@@ -443,6 +443,7 @@ static void
 prepare_feedback(CHA_PTR cp)
 {
     // prepare AFC
+    printf("test_gha.h: prepare_feedback: calling cha_afc_prepare...\n");
     cha_afc_prepare(cp, &afc);
 }
 
@@ -645,6 +646,9 @@ configure_feedback()
     afc.afl = 45; // adaptive filter length
     afc.wfl = 9;  // whiten-filter length
     afc.pfl = 0;  // band-limit-filter length
+
+    printf("test_gha: configure_feedback: args.afl %i, args.wfl %i, args.pfl %i\n",args.afl, args.wfl, args.pfl);
+    
     // update args
     if (args.afl >= 0)
         afc.afl = args.afl;
@@ -679,6 +683,10 @@ configure_feedback()
     afc.nqm = 0;  // initialize quality-metric length
     if (!args.simfb)
         afc.fbg = 0;
+
+    Serial.println("test_gha: configure_feedback: rho = " + String(afc.rho,8));
+    Serial.println("test_gha: configure_feedback: eps = " + String(afc.eps,8));
+    Serial.println("test_gha: configure_feedback: mu = " + String(afc.mu,8));
 }
 
 static void
