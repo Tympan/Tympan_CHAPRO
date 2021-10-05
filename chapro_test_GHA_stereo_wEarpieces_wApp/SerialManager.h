@@ -56,9 +56,9 @@ class SerialManager : public SerialManagerBase  {  // see Tympan_Library for Ser
 void SerialManager::printHelp(void) {  
   Serial.println("SerialManager Help: Available Commands:");
   Serial.println(" h: Print this help");
-  Serial.println(" m/M: AFC: incr/decrease mu (current: " + String(BTNRH_alg1.cha_dvar[_mu],6) + ")");
-  Serial.println(" r/R: AFC: incr/decrease rho (current: " + String(BTNRH_alg1.cha_dvar[_rho],6) + ")");
-  Serial.println(" e/E: AFC: incr/decrease eps (current: " + String(BTNRH_alg1.cha_dvar[_eps],6) + ")");
+  Serial.println(" m/M: AFC: incr/decrease mu (current: " + String((float)(BTNRH_alg1.get_cha_dvar(_mu)),8) + ")");
+  Serial.println(" r/R: AFC: incr/decrease rho (current: " + String((float)(BTNRH_alg1.get_cha_dvar(_rho)),8) + ")");
+  Serial.println(" e/E: AFC: incr/decrease eps (current: " + String((float)(BTNRH_alg1.get_cha_dvar(_eps)),8) + ")");
 
   //Add in the printHelp() that is built-into the other UI-enabled system components.
   //The function call below loops through all of the UI-enabled classes that were
@@ -73,43 +73,50 @@ void SerialManager::printHelp(void) {
 //of logic that has already been built-into the UI-enabled classes.
 bool SerialManager::processCharacter(char c) {  //this is called by SerialManagerBase.respondToByte(char c)
   bool ret_val = true;
-  double old_val, new_val;
+  int ind;
+  double old_val, new_val, scale_fac=1.0;
   
   switch (c) {
     case 'h':
       printHelp(); 
       break;
     case 'm':
-      BTNRH_alg2.cha_dvar[_mu] = (BTNRH_alg1.cha_dvar[_mu] *= 2.0);
-      BTNRH_alg2.cha_ivar[_in1] = BTNRH_alg1.cha_ivar[_in1] = 0;  //command afc_process to re-initialize its parameters
-      myTympan.print("Command received: increasing AFC mu to "); myTympan.println(BTNRH_alg1.cha_dvar[_mu],6);
+      ind = _mu; scale_fac = 2.0f;
+      old_val = BTNRH_alg1.get_cha_dvar(ind); new_val = old_val *= scale_fac;
+      BTNRH_alg1.set_cha_dvar(ind, new_val);  BTNRH_alg2.set_cha_dvar(ind, new_val);
+      BTNRH_alg1.set_cha_ivar(_in1, 0); BTNRH_alg2.set_cha_ivar(_in1, 0);  //command afc_process to re-initialize its parameters
+      myTympan.print("Command received: changing AFC mu to "); myTympan.println(BTNRH_alg1.get_cha_dvar(ind),7);
       break;
     case 'M':
-      BTNRH_alg2.cha_dvar[_mu] = (BTNRH_alg1.cha_dvar[_mu] /= 2.0);
-      BTNRH_alg2.cha_ivar[_in1] = BTNRH_alg1.cha_ivar[_in1] = 0;  //command afc_process to re-initialize its parameters
-      myTympan.print("Command received: decreasing AFC mu to "); myTympan.println(BTNRH_alg1.cha_dvar[_mu],6);
+      ind = _mu; scale_fac = 1.0/2.0f;
+      old_val = BTNRH_alg1.get_cha_dvar(ind); new_val = old_val *= scale_fac;
+      BTNRH_alg1.set_cha_dvar(ind, new_val);  BTNRH_alg2.set_cha_dvar(ind, new_val);
+      BTNRH_alg1.set_cha_ivar(_in1, 0); BTNRH_alg2.set_cha_ivar(_in1, 0);  //command afc_process to re-initialize its parameters
+      myTympan.print("Command received: changing AFC mu to "); myTympan.println(BTNRH_alg1.get_cha_dvar(ind),7);
       break;
     case 'r':
-      old_val = BTNRH_alg1.cha_dvar[_rho]; new_val = 1.0-((1.0-old_val)/sqrtf(2.0));
-      BTNRH_alg2.cha_dvar[_rho] = (BTNRH_alg1.cha_dvar[_rho] = new_val);
-      BTNRH_alg2.cha_ivar[_in1] = BTNRH_alg1.cha_ivar[_in1] = 0;  //command afc_process to re-initialize its parameters
-      myTympan.print("Command received: increasing AFC rho to "); myTympan.println(new_val,6);
+      ind = _rho; old_val = BTNRH_alg1.get_cha_dvar(ind); new_val = 1.0-((1.0-old_val)/sqrtf(2.0));
+      BTNRH_alg1.set_cha_dvar(ind, new_val);  BTNRH_alg2.set_cha_dvar(ind, new_val);
+      BTNRH_alg1.set_cha_ivar(_in1, 0); BTNRH_alg2.set_cha_ivar(_in1, 0);  //command afc_process to re-initialize its parameters
+      myTympan.print("Command received: changing AFC rho to "); myTympan.println(BTNRH_alg1.get_cha_dvar(ind),7);
       break;
     case 'R':
-      old_val = BTNRH_alg1.cha_dvar[_rho]; new_val = 1.0-((1.0-old_val)*sqrtf(2.0));
-      BTNRH_alg2.cha_dvar[_rho] = (BTNRH_alg1.cha_dvar[_rho] = new_val);
-      BTNRH_alg2.cha_ivar[_in1] = BTNRH_alg1.cha_ivar[_in1] = 0;  //command afc_process to re-initialize its parameters
-      myTympan.print("Command received: decreasing AFC rho to "); myTympan.println(new_val,6);
+      ind = _rho; old_val = BTNRH_alg1.get_cha_dvar(ind); new_val = 1.0-((1.0-old_val)*sqrtf(2.0));
+      BTNRH_alg1.set_cha_dvar(ind, new_val);  BTNRH_alg2.set_cha_dvar(ind, new_val);
+      BTNRH_alg1.set_cha_ivar(_in1, 0); BTNRH_alg2.set_cha_ivar(_in1, 0);  //command afc_process to re-initialize its parameters
+      myTympan.print("Command received: changing AFC rho to "); myTympan.println(BTNRH_alg1.get_cha_dvar(ind),7);
       break;
     case 'e':
-      BTNRH_alg2.cha_dvar[_eps] = (BTNRH_alg1.cha_dvar[_eps] *= sqrtf(10.0));
-      BTNRH_alg2.cha_ivar[_in1] = BTNRH_alg1.cha_ivar[_in1] = 0;  //command afc_process to re-initialize its parameters
-      myTympan.print("Command received: increasing AFC eps to "); myTympan.println(BTNRH_alg1.cha_dvar[_eps],6);
+      ind = _eps; scale_fac = sqrtf(10.0f);
+      BTNRH_alg1.set_cha_dvar(ind, new_val);  BTNRH_alg2.set_cha_dvar(ind, new_val);
+      BTNRH_alg1.set_cha_ivar(_in1, 0); BTNRH_alg2.set_cha_ivar(_in1, 0);  //command afc_process to re-initialize its parameters
+      myTympan.print("Command received: changing AFC eps to "); myTympan.println(BTNRH_alg1.get_cha_dvar(ind),7);
       break;
     case 'E':
-      BTNRH_alg2.cha_dvar[_eps] = (BTNRH_alg1.cha_dvar[_eps] /= sqrtf(10.0));
-      BTNRH_alg2.cha_ivar[_in1] = BTNRH_alg1.cha_ivar[_in1] = 0;  //command afc_process to re-initialize its parameters
-      myTympan.print("Command received: decreasing AFC eps to "); myTympan.println(BTNRH_alg1.cha_dvar[_eps],6);
+      ind = _eps; scale_fac = 1.0/sqrtf(10.0f);
+      BTNRH_alg1.set_cha_dvar(ind, new_val);  BTNRH_alg2.set_cha_dvar(ind, new_val);
+      BTNRH_alg1.set_cha_ivar(_in1, 0); BTNRH_alg2.set_cha_ivar(_in1, 0);  //command afc_process to re-initialize its parameters
+      myTympan.print("Command received: changing AFC eps to "); myTympan.println(BTNRH_alg1.get_cha_dvar(ind),7);
       break;    
     case 'J': case 'j':           //The TympanRemote app sends a 'J' to the Tympan when it connects
       printTympanRemoteLayout();  //in resonse, the Tympan sends the definition of the GUI that we'd like

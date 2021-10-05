@@ -70,7 +70,9 @@ void setup() {
   // /////////////////////////////////////////////  do any setup of the algorithms
 
   BTNRH_alg1.setup();        //in AudioEffectNFC.h
+  Serial.println("setup: finished BTNRH_alg1.setup() ??");
   BTNRH_alg2.setup();        //in AudioEffectNFC.h
+  Serial.println("setup: finished BTNRH_alg2.setup() ??");
 
   BTNRH_alg1.setEnabled(true);  //see AudioEffectNFC.h.  This could be done later in setup()
   BTNRH_alg2.setEnabled(true);  //see AudioEffectNFC.h.  This could be done later in setup()

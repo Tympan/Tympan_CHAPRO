@@ -28,12 +28,15 @@ public:
     //constructor
     AudioEffectBTNRH(const AudioSettings_F32 &settings) : AudioStream_F32(1, inputQueueArray_f32){};
     
-    //CHAPRO-relevant data members
+    //CHAPRO-relevant data members...each instance of this algorithm gets its own copy of these data structures
     void *cp[NPTR] = {0};  //Create a local version of CHA_PTR for use by each instance of this class.  NPTR is set in chapro.h???
     I_O io;                //Create a local version of I_O for use by each instance of this class.
     
-    double* cha_dvar = ((double *)cp[_dvar]);
-    int* cha_ivar = ((int *)cp[_ivar]);
+    double get_cha_dvar(int ind) { return ((double *)cp[_dvar])[ind]; }; 
+    double set_cha_dvar(int ind, double val) { return ((double *)cp[_dvar])[ind] = val; };
+    int get_cha_ivar(int ind) { return ((int *)cp[_ivar])[ind]; }; 
+    int set_cha_ivar(int ind, int val) { return ((int *)cp[_ivar])[ind] = val; };
+    
 
     //setup methods
     void setup(void)  { 
@@ -42,6 +45,10 @@ public:
     
       Serial.println("AudioEffectBTNRH: setup(): BTNRH prepare...");
       prepare(&io, cp);             //in test_nfc.h
+
+      Serial.println("AudioEffectBTNRH: setup(): _dvar = " + String(_dvar) + ", _rho = " + String(_rho) + ", ((double *)cp[_dvar])[_rho] = " + String(((double *)cp[_dvar])[_rho],9) + ", get_cha_dvar(_rho) = " + String(get_cha_dvar(_rho),9));
+      Serial.println("AudioEffectBTNRH: setup(): CHA_IVAR[_mxl] = " + String(get_cha_ivar(_mxl)));
+      Serial.println("AudioEffectBTNRH: setup(): CHA_IVAR[_in1] = " + String(get_cha_ivar(_in1)) + ", CHA_IVAR[_in2] = " + String(get_cha_ivar(_in2)));
     }    
     
 

@@ -426,6 +426,7 @@ prepare_filterbank(CHA_PTR cp)
     cha_iirfb_design(z, p, g, d, cf, nc, nz, sr, td); //see iirfb_design.c
     printf("test_gha: cha_iirfb_prepare...\n");
     cha_iirfb_prepare(cp, z, p, g, d, nc, nz, sr, cs);
+    printf("test_gha: prepare_filterbank complete.\n");
 }
 
 // prepare AGC compressor
@@ -467,6 +468,8 @@ prepare(I_O *io, CHA_PTR cp)
     prepared++;
     // generate C code from prepared data
     //cha_data_gen(cp, DATA_HDR);
+
+    printf("test_gha.h: prepare:((int *)cp[_ivar])[_in1] = %i, ((int *)cp[_ivar])[_in2] = %i\n",((int *)cp[_ivar])[_in1],((int *)cp[_ivar])[_in2]);
 }
 
 // process signal
@@ -646,9 +649,8 @@ configure_feedback()
     afc.afl = 45; // adaptive filter length
     afc.wfl = 9;  // whiten-filter length
     afc.pfl = 0;  // band-limit-filter length
-
-    printf("test_gha: configure_feedback: args.afl %i, args.wfl %i, args.pfl %i\n",args.afl, args.wfl, args.pfl);
-    
+   
+    /*
     // update args
     if (args.afl >= 0)
         afc.afl = args.afl;
@@ -656,7 +658,11 @@ configure_feedback()
         afc.wfl = args.wfl;
     if (args.pfl >= 0)
         afc.pfl = args.pfl;
+    */
     afc.alf = 0; // band-limit update
+
+    printf("test_gha: configure_feedback: afc.afl %ld, afc.wfl %ld, afc.pfl %ld\n",afc.afl, afc.wfl, afc.pfl);
+ 
     if (afc.pfl)
     {                          // optimized for pfl=23
         afc.rho = 0.002577405; // forgetting factor
@@ -684,9 +690,7 @@ configure_feedback()
     if (!args.simfb)
         afc.fbg = 0;
 
-    Serial.println("test_gha: configure_feedback: rho = " + String(afc.rho,8));
-    Serial.println("test_gha: configure_feedback: eps = " + String(afc.eps,8));
-    Serial.println("test_gha: configure_feedback: mu = " + String(afc.mu,8));
+    printf("test_gha: configure_feedback: rho %9.8f, mu %9.8f, eps %9.8f\n", afc.rho, afc.mu, afc.eps);
 }
 
 static void

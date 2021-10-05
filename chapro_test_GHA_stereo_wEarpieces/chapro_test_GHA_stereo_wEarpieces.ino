@@ -115,7 +115,7 @@ void setup() { //this runs once at startup
     
     //Set the desired volume levels
     myTympan.volume_dB(0);                   // headphone amplifier.  -63.6 to +24 dB in 0.5dB steps.
-    earpieceShield.volume_dB(-10.0);     // headphone amplifier.  -63.6 to +24 dB in 0.5dB steps.
+    earpieceShield.volume_dB(-10.0);         // headphone amplifier.  -63.6 to +24 dB in 0.5dB steps.
     float input_gain_dB = 5.0;
     myTympan.setInputGain_dB(input_gain_dB); // set input volume, 0-47.5dB in 0.5dB setps
 
