@@ -19,36 +19,47 @@
 
 // Algorithm-specific include files
 #include <chapro.h>
-#include "test_gha.h"  ////////////////////////////////////////// Update this for your CHAPRO Algorithm!!!!
+#include "test_gha.h"            ////////////////////////////////////////// Update this for your CHAPRO Algorithm!!!!
 
 
 class AudioEffectBTNRH : public AudioStream_F32
 {
 public:
     //constructor
-    AudioEffectBTNRH(const AudioSettings_F32 &settings) : AudioStream_F32(1, inputQueueArray_f32){};
-    
+    AudioEffectBTNRH(const AudioSettings_F32 &settings) : AudioStream_F32(1, inputQueueArray_f32){ };
+
+    //CHAPRO usually uses a bunch of global data structures/arrays to hold parameters and states.  Let's make copies
+    //here within this class so that we can run multiple instances of the algorithm (such as left and right) without
+    //worrying about the left and right overwriting each other's settings or states.
+    //
     //CHAPRO-relevant data members...each instance of this algorithm gets its own copy of these data structures
-    void *cp[NPTR] = {0};  //Create a local version of CHA_PTR for use by each instance of this class.  NPTR is set in chapro.h???
-    I_O io;                //Create a local version of I_O for use by each instance of this class.
-    
+    void *cp[NPTR] = {0};        // NPTR is set in chapro.h???
+    I_O io;                
+    CHA_AFC local_afc = {0};     ////////////////////////////////////////// Add or remove based on *your* CHAPRO Algorithm!!!!
+    CHA_DSL local_dsl = {0};     ////////////////////////////////////////// Add or remove based on *your* CHAPRO Algorithm!!!!
+    CHA_WDRC local_agc = {0};    ////////////////////////////////////////// Add or remove based on *your* CHAPRO Algorithm!!!!
+
+    //methods to access the CHA_DVAR and CHA_IVAR values
     double get_cha_dvar(int ind) { return ((double *)cp[_dvar])[ind]; }; 
     double set_cha_dvar(int ind, double val) { return ((double *)cp[_dvar])[ind] = val; };
     int get_cha_ivar(int ind) { return ((int *)cp[_ivar])[ind]; }; 
     int set_cha_ivar(int ind, int val) { return ((int *)cp[_ivar])[ind] = val; };
-    
+
+    bool setup_complete = false;
 
     //setup methods
     void setup(void)  { 
-      Serial.println("AudioEffectBTNRH: setup(): BTNRH configure...");
-      configure(&io);               //in test_nfc.h
-    
-      Serial.println("AudioEffectBTNRH: setup(): BTNRH prepare...");
-      prepare(&io, cp);             //in test_nfc.h
 
-      Serial.println("AudioEffectBTNRH: setup(): _dvar = " + String(_dvar) + ", _rho = " + String(_rho) + ", ((double *)cp[_dvar])[_rho] = " + String(((double *)cp[_dvar])[_rho],9) + ", get_cha_dvar(_rho) = " + String(get_cha_dvar(_rho),9));
-      Serial.println("AudioEffectBTNRH: setup(): CHA_IVAR[_mxl] = " + String(get_cha_ivar(_mxl)));
-      Serial.println("AudioEffectBTNRH: setup(): CHA_IVAR[_in1] = " + String(get_cha_ivar(_in1)) + ", CHA_IVAR[_in2] = " + String(get_cha_ivar(_in2)));
+      //copy local to global...NO.  Assume that the global functions (configure() and prepare()) will define the globals
+      //afc = local_afc;  dsl = local_dsl;  agc = local_agc;  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!!  
+      
+      configure(&io);               //in test_gha.h
+      prepare(&io, cp);             //in test_gha.h
+
+      //copy global back to local
+      local_afc = afc;  local_dsl = dsl;  local_agc = agc;  ///////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!!  
+
+      setup_complete = true;
     }    
     
 
@@ -56,11 +67,17 @@ public:
     // Here is where you can add your algorithm.  This function gets called block-wise
     void applyMyAlgorithm(audio_block_f32_t *audio_block)
     {
-        float *x = audio_block->data;  //This is used input audio.  And, the output is written back in here, too
-        int cs = audio_block->length;  //How many audio samples to process?
-
-        //hopefully, this one line is all that needs to change to reflect what CHAPRO code you want to use
-        process_chunk(cp, x, x, cs); //see test_gha.h  (or whatever test_xxxx.h is #included at the top)
+      float *x = audio_block->data;  //This is used input audio.  And, the output is written back in here, too
+      int cs = audio_block->length;  //How many audio samples to process?
+      
+      //copy local to global
+      afc = local_afc;  dsl = local_dsl;  agc = local_agc;  ///////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      
+      //hopefully, this one line is all that needs to change to reflect what CHAPRO code you want to use
+      process_chunk(cp, x, x, cs); //see test_gha.h  (or whatever test_xxxx.h is #included at the top)
+      
+      //copy global back to local
+      local_afc = afc;  local_dsl = dsl;  local_agc = agc;  ///////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!!  
 
     } //end of applyMyAlgorithms
     // /////////// End of the signal processing code that references CHAPRO
@@ -95,5 +112,6 @@ private:
     bool enabled = false;
 
 }; //end class definition for AudioEffectBTNRH
+
 
 #endif

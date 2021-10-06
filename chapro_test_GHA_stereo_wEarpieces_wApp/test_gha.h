@@ -58,6 +58,7 @@ process_chunk(CHA_PTR cp, float *x, float *y, int cs)
         // next line switches to compiled data
         //cp = (CHA_PTR) cha_data;
         float *z = CHA_CB;
+        
         cha_afc_filters(cp, &afc);
         // process IIR+AGC+AFC
         cha_afc_input(cp, x, x, cs);
@@ -421,10 +422,8 @@ prepare_filterbank(CHA_PTR cp)
     nz = agc.nz;
     td = agc.td;
     printf("test_gha: prepare_filterbank: sr=%0.0f, cs=%d, nc=%d, nz=%d, td=%0.2f\n",sr,cs,nc,nz,td);
-    //printf("test_gha: prepare_filterbank: cf = "); for (int i=0; i< (nc-1);i++) { printf("%3.1f, ", cf[i]); } printf('\n');
     printf("test_gha: cha_iirfb_design...\n");
     cha_iirfb_design(z, p, g, d, cf, nc, nz, sr, td); //see iirfb_design.c
-    printf("test_gha: cha_iirfb_prepare...\n");
     cha_iirfb_prepare(cp, z, p, g, d, nc, nz, sr, cs);
     printf("test_gha: prepare_filterbank complete.\n");
 }
@@ -444,7 +443,6 @@ static void
 prepare_feedback(CHA_PTR cp)
 {
     // prepare AFC
-    printf("test_gha.h: prepare_feedback: calling cha_afc_prepare...\n");
     cha_afc_prepare(cp, &afc);
 }
 
@@ -453,23 +451,19 @@ prepare_feedback(CHA_PTR cp)
 static void
 prepare(I_O *io, CHA_PTR cp)
 {
-    printf("test_gha.h: prepare: preparing io...\n");
     prepare_io(io);
     srate = io->rate;
     chunk = io->cs;
-    printf("test_gha.h: prepare: preparing filterbank...\n");
     prepare_filterbank(cp);
-    printf("test_gha.h: prepare: preparing compressor...\n");
     prepare_compressor(cp);
     if (afc.sqm)
-        afc.nqm = io->nsmp * io->nrep;
-    printf("test_gha.h: prepare: preparing feedback...\n");        
+        afc.nqm = io->nsmp * io->nrep;      
     prepare_feedback(cp);
     prepared++;
     // generate C code from prepared data
     //cha_data_gen(cp, DATA_HDR);
 
-    printf("test_gha.h: prepare:((int *)cp[_ivar])[_in1] = %i, ((int *)cp[_ivar])[_in2] = %i\n",((int *)cp[_ivar])[_in1],((int *)cp[_ivar])[_in2]);
+    //printf("test_gha.h: prepare:((int *)cp[_ivar])[_in1] = %i, ((int *)cp[_ivar])[_in2] = %i\n",((int *)cp[_ivar])[_in1],((int *)cp[_ivar])[_in2]);
 }
 
 // process signal
@@ -660,8 +654,6 @@ configure_feedback()
         afc.pfl = args.pfl;
     */
     afc.alf = 0; // band-limit update
-
-    printf("test_gha: configure_feedback: afc.afl %ld, afc.wfl %ld, afc.pfl %ld\n",afc.afl, afc.wfl, afc.pfl);
  
     if (afc.pfl)
     {                          // optimized for pfl=23
@@ -689,8 +681,6 @@ configure_feedback()
     afc.nqm = 0;  // initialize quality-metric length
     if (!args.simfb)
         afc.fbg = 0;
-
-    printf("test_gha: configure_feedback: rho %9.8f, mu %9.8f, eps %9.8f\n", afc.rho, afc.mu, afc.eps);
 }
 
 static void
@@ -701,9 +691,7 @@ configure(I_O *io)
 //    static char *mfn = "test/tst_gha.mat";
 
     // initialize CHAPRO variables
-    printf("test_gha: configure: configure_compressor()...\n");
     configure_compressor();
-    printf("test_gha: configure: configure_feedback()...\n");
     configure_feedback();
     // initialize I/O
 #ifdef ARSCLIB_H

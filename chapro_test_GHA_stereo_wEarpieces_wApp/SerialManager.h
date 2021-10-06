@@ -55,6 +55,7 @@ class SerialManager : public SerialManagerBase  {  // see Tympan_Library for Ser
 
 void SerialManager::printHelp(void) {  
   Serial.println("SerialManager Help: Available Commands:");
+  Serial.println(" Info: BTNRH_alg1.setup = " + String(BTNRH_alg1.setup_complete) + ", BTNRH_alg1.setup = " + String(BTNRH_alg2.setup_complete));
   Serial.println(" h: Print this help");
   Serial.println(" m/M: AFC: incr/decrease mu (current: " + String((float)(BTNRH_alg1.get_cha_dvar(_mu)),8) + ")");
   Serial.println(" r/R: AFC: incr/decrease rho (current: " + String((float)(BTNRH_alg1.get_cha_dvar(_rho)),8) + ")");

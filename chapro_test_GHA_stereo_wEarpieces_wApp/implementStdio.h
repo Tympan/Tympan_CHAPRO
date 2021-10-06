@@ -9,13 +9,19 @@ auto &debugOut = Serial;
 
 extern "C" {
   int _write(int fd, const char *buf, int len) {
+    int ret_val;
+    
     // Send both stdout and stderr to debugOut
     if (fd == stdout->_file || fd == stderr->_file) {
-      return debugOut.write(reinterpret_cast<const uint8_t *>(buf), len);
+      ret_val = debugOut.write(reinterpret_cast<const uint8_t *>(buf), len);
+      debugOut.flush();
+      return ret_val;
     }
   
     // Doing the following keeps this compatible with Print.cpp's requirements
     Print *p = reinterpret_cast<Print *>(fd);
-    return p->write(reinterpret_cast<const uint8_t *>(buf), len);
+    ret_val = p->write(reinterpret_cast<const uint8_t *>(buf), len);
+    p->flush();
+    return ret_val;
   }
 }
