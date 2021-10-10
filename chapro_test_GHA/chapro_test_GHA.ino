@@ -57,8 +57,8 @@ void setup() { //this runs once at startup
 
     // /////////////////////////////////////////////  do any setup of the algorithms
 
-    BTNRH_alg1.setup();           //in AudioEffectNFC.h
-    BTNRH_alg1.setEnabled(true);  //see AudioEffectNFC.h.  This could be done later in setup()
+    BTNRH_alg1.setup();           //in AudioEffectBTNRH.h
+    BTNRH_alg1.setEnabled(true);  //see AudioEffectBTNRH.h.  This could be done later in setup()
    
     // //////////////////////////////////////////// End setup of the algorithms
 
@@ -88,7 +88,7 @@ void setup() { //this runs once at startup
 void loop() {  //this runs forever in a loop
   
     //periodically print the CPU and Memory Usage
-    myTympan.printCPUandMemory(millis(),1000); //print every 3000 msec
+    myTympan.printCPUandMemory(millis(),2000); //print every 3000 msec
 
     //stall, just to be nice?
     delay(5);

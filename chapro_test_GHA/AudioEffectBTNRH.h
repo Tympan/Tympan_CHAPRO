@@ -22,10 +22,10 @@ public:
     //setup methods
     void setup(void)  { 
       Serial.println("AudioEffectBTNRH: setup(): BTNRH configure...");
-      configure(&io);               //in test_nfc.h
+      configure(&io);               //in test_gha.h
     
       Serial.println("AudioEffectBTNRH: setup(): BTNRH prepare...");
-      prepare(&io, cp);             //in test_nfc.h
+      prepare(&io, cp);             //in test_gha.h
     }    
     
 

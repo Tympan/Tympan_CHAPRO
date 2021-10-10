@@ -2,7 +2,7 @@
 #ifndef _test_gha_h
 #define _test_gha_h
 
-// tst_gha.c - test IIR-filterbank + AGC + NFC
+// tst_gha.c - test IIR-filterbank + AGC + AFC
 //              with WAV file input & ARSC output
 
 
