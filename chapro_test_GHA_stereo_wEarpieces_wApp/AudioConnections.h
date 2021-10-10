@@ -24,6 +24,7 @@ AudioConnection_F32        patchcord32(BTNRH_alg2, 0, i2s_out, EarpieceShield::O
 AudioConnection_F32        patchcord33(BTNRH_alg1, 0, i2s_out, EarpieceShield::OUTPUT_LEFT_EARPIECE);  //Second AIC (Earpiece!), left output
 AudioConnection_F32        patchcord34(BTNRH_alg2, 0, i2s_out, EarpieceShield::OUTPUT_RIGHT_EARPIECE); //Secibd AIC (Earpiece!), right output
 
+
 // Note About the Outputs Being Defined Above: 
 //   The four lines above assign audio to the four outputs available on the Tympan+EarpieceShield.  Two
 //   of these outputs are part of the base Tympan board (and come out the Tympan's standard headphone jack).

@@ -12,7 +12,7 @@ extern Tympan myTympan;                    //created in the main *.ino file
 extern State myState;                      //created in the main *.ino file
 extern EarpieceMixer_F32_UI earpieceMixer; //created in the main *.ino file
 extern AudioSDWriter_F32_UI audioSDWriter;
-extern AudioEffectBTNRH BTNRH_alg1, BTNRH_alg1;
+extern AudioEffectBTNRH BTNRH_alg1, BTNRH_alg2;
 
 //
 // The purpose of this class is to be a central place to handle all of the interactions
@@ -51,11 +51,9 @@ class SerialManager : public SerialManagerBase  {  // see Tympan_Library for Ser
 };
 
 
-
-
 void SerialManager::printHelp(void) {  
   Serial.println("SerialManager Help: Available Commands:");
-  Serial.println(" Info: BTNRH_alg1.setup = " + String(BTNRH_alg1.setup_complete) + ", BTNRH_alg1.setup = " + String(BTNRH_alg2.setup_complete));
+  Serial.println(" Info: BTNRH_alg1 setup complete = " + String(BTNRH_alg1.setup_complete) + ", BTNRH_alg2 setup complete = " + String(BTNRH_alg2.setup_complete));
   Serial.println(" h: Print this help");
   Serial.println(" m/M: AFC: incr/decrease mu (current: " + String((float)(BTNRH_alg1.get_cha_dvar(_mu)),8) + ")");
   Serial.println(" r/R: AFC: incr/decrease rho (current: " + String((float)(BTNRH_alg1.get_cha_dvar(_rho)),8) + ")");
@@ -91,7 +89,7 @@ bool SerialManager::processCharacter(char c) {  //this is called by SerialManage
     case 'M':
       ind = _mu; scale_fac = 1.0/2.0f;
       old_val = BTNRH_alg1.get_cha_dvar(ind); new_val = old_val *= scale_fac;
-      BTNRH_alg1.set_cha_dvar(ind, new_val);  BTNRH_alg2.set_cha_dvar(ind, new_val);
+      BTNRH_alg1.set_cha_dvar(ind, new_val); BTNRH_alg2.set_cha_dvar(ind, new_val);
       BTNRH_alg1.set_cha_ivar(_in1, 0); BTNRH_alg2.set_cha_ivar(_in1, 0);  //command afc_process to re-initialize its parameters
       myTympan.print("Command received: changing AFC mu to "); myTympan.println(BTNRH_alg1.get_cha_dvar(ind),7);
       break;

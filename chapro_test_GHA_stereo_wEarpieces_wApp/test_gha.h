@@ -39,11 +39,11 @@ static double srate = 24000; // sampling rate (Hz)
 static int chunk = 32;       // chunk size
 static int prepared = 0;
 //static int io_wait = 40;
-static struct
-{
-    char *ifn, *ofn, simfb, afc, mat, nrep, play;
-    int afl, wfl, pfl;
-} args;
+//static struct
+//{
+//    char *ifn, *ofn, simfb, afc, mat, nrep, play;
+//    int afl, wfl, pfl;
+//} args;
 static CHA_AFC afc = {0};
 static CHA_DSL dsl = {0};
 static CHA_WDRC agc = {0};
@@ -58,16 +58,15 @@ process_chunk(CHA_PTR cp, float *x, float *y, int cs)
         // next line switches to compiled data
         //cp = (CHA_PTR) cha_data;
         float *z = CHA_CB;
-        
-        cha_afc_filters(cp, &afc);
+        //cha_afc_filters(cp, &afc); Steve said to dissble, email 10/6/2021
         // process IIR+AGC+AFC
-        cha_afc_input(cp, x, x, cs);
+        cha_afc_input(cp, x, x, cs); 
         cha_agc_input(cp, x, x, cs);
         cha_iirfb_analyze(cp, x, z, cs);
         cha_agc_channel(cp, z, z, cs);
         cha_iirfb_synthesize(cp, z, y, cs);
         cha_agc_output(cp, y, y, cs);
-        cha_afc_output(cp, y, cs);
+        cha_afc_output(cp, y, cs); 
     }
 }
 
@@ -625,7 +624,13 @@ static void
 configure_compressor()
 {
     // DSL prescription example
-    static CHA_DSL dsl_ex = {5, 50, 119, 0, 8, {317.1666, 502.9734, 797.6319, 1264.9, 2005.9, 3181.1, 5044.7}, {-13.5942, -16.5909, -3.7978, 6.6176, 11.3050, 23.7183, 35.8586, 37.3885}, {0.7, 0.9, 1, 1.1, 1.2, 1.4, 1.6, 1.7}, {32.2, 26.5, 26.7, 26.7, 29.8, 33.6, 34.3, 32.7}, {78.7667, 88.2, 90.7, 92.8333, 98.2, 103.3, 101.9, 99.8}};
+    static CHA_DSL dsl_ex = {5, 50, 119, 0, 8, 
+        {317.1666, 502.9734, 797.6319, 1264.9, 2005.9, 3181.1, 5044.7}, 
+        {-13.5942, -16.5909, -3.7978, 6.6176, 11.3050, 23.7183, 25.0, 25.0},   // last two values were 35.8586, 37.3885
+        {0.7, 0.9, 1, 1.1, 1.2, 1.4, 1.6, 1.7}, 
+        {32.2, 26.5, 26.7, 26.7, 29.8, 33.6, 34.3, 32.7}, 
+        {78.7667, 88.2, 90.7, 92.8333, 98.2, 103.3, 101.9, 99.8}
+        };
     static CHA_WDRC agc_ex = {1, 50, 24000, 119, 0, 105, 10, 105};
     static int nz = 4;
     static double td = 2.5;
@@ -641,20 +646,17 @@ configure_feedback()
 {
     // AFC parameters
     afc.afl = 45; // adaptive filter length
-    afc.wfl = 9;  // whiten-filter length
-    afc.pfl = 0;  // band-limit-filter length
-   
-    /*
+    afc.wfl = 9;  // whiten-filter length...originally 9, but Steve suggested 5 along with pfl of 36 in email 10/9/2021
+    afc.pfl = 0;  // band-limit-filter length...originally 0, but Steve suggested 36 with wfl of 9 in email 10/9/2021
     // update args
-    if (args.afl >= 0)
-        afc.afl = args.afl;
-    if (args.wfl >= 0)
-        afc.wfl = args.wfl;
-    if (args.pfl >= 0)
-        afc.pfl = args.pfl;
-    */
+//    if (args.afl >= 0)
+//        afc.afl = args.afl;
+//    if (args.wfl >= 0)
+//        afc.wfl = args.wfl;
+//    if (args.pfl >= 0)
+//        afc.pfl = args.pfl;
     afc.alf = 0; // band-limit update
- 
+    
     if (afc.pfl)
     {                          // optimized for pfl=23
         afc.rho = 0.002577405; // forgetting factor
@@ -676,11 +678,11 @@ configure_feedback()
     }
     afc.pup = 1;  // band-limit update period
     afc.hdel = 0; // output/input hardware delay
-    afc.sqm = 1;  // save quality metric ?
-    afc.fbg = 1;  // simulated-feedback gain
+    afc.sqm = 0;  // save quality metric ?
+    //afc.fbg = 1;  // simulated-feedback gain
     afc.nqm = 0;  // initialize quality-metric length
-    if (!args.simfb)
-        afc.fbg = 0;
+    //if (!args.simfb)
+        afc.fbg = 0;  //zero synthetic feedback
 }
 
 static void

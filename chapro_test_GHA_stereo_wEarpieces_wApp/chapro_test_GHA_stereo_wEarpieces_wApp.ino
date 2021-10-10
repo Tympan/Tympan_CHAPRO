@@ -93,9 +93,6 @@ void setup() {
     Serial.println("setup: BTNRH_alg2 completed setup.");Serial.flush();
   }
 
-  Serial.println("setup: BTNRH_alg1 setup complete: " + String(BTNRH_alg1.setup_complete));
-  Serial.println("setup: BTNRH_alg2 setup complete: " + String(BTNRH_alg2.setup_complete));
-
   BTNRH_alg1.setEnabled(true);  //see AudioEffectNFC.h.  This could be done later in setup()
   BTNRH_alg2.setEnabled(true);  //see AudioEffectNFC.h.  This could be done later in setup()
  
@@ -118,7 +115,9 @@ void setup() {
     Serial.println("setup: PDM Earpiece is the active input.");
   } else {
     //default to an analog input
-    earpieceMixer.setAnalogInputSource(EarpieceMixerState::INPUT_MICJACK_MIC);  //Choose the desired audio analog input on the Typman...this will be overridden by the serviceMicDetect() in loop(), if micDetect is enabled
+    earpieceMixer.setAnalogInputSource(EarpieceMixerState::INPUT_PCBMICS);  //Choose the desired audio analog input on the Typman
+    //earpieceMixer.setAnalogInputSource(EarpieceMixerState::INPUT_MICJACK_MIC);  //Choose the desired audio analog input on the Typman
+    earpieceMixer.setInputAnalogVsPDM(EarpieceMixerState::INPUT_ANALOG);       // ****but*** then activate the PDM mics
     Serial.println("setup: analog input is the active input.");
   }
   

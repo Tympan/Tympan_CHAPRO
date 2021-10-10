@@ -35,6 +35,7 @@ public:
     //CHAPRO-relevant data members...each instance of this algorithm gets its own copy of these data structures
     void *cp[NPTR] = {0};        // NPTR is set in chapro.h???
     I_O io;                
+    int local_prepared = 0;
     CHA_AFC local_afc = {0};     ////////////////////////////////////////// Add or remove based on *your* CHAPRO Algorithm!!!!
     CHA_DSL local_dsl = {0};     ////////////////////////////////////////// Add or remove based on *your* CHAPRO Algorithm!!!!
     CHA_WDRC local_agc = {0};    ////////////////////////////////////////// Add or remove based on *your* CHAPRO Algorithm!!!!
@@ -51,13 +52,20 @@ public:
     void setup(void)  { 
 
       //copy local to global...NO.  Assume that the global functions (configure() and prepare()) will define the globals
-      //afc = local_afc;  dsl = local_dsl;  agc = local_agc;  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!!  
-      
+      //afc = local_afc;  dsl = local_dsl;  agc = local_agc;  
+      memcpy(&afc, &local_afc, sizeof(CHA_AFC));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      memcpy(&dsl, &local_dsl, sizeof(CHA_DSL));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      memcpy(&agc, &local_agc, sizeof(CHA_WDRC)); //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      prepared = local_prepared; //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!!  
+
       configure(&io);               //in test_gha.h
       prepare(&io, cp);             //in test_gha.h
 
       //copy global back to local
-      local_afc = afc;  local_dsl = dsl;  local_agc = agc;  ///////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!!  
+      memcpy(&local_afc, &afc, sizeof(CHA_AFC));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      memcpy(&local_dsl, &dsl, sizeof(CHA_DSL));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      memcpy(&local_agc, &agc, sizeof(CHA_WDRC)); //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      local_prepared = prepared; //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!!  
 
       setup_complete = true;
     }    
@@ -71,14 +79,20 @@ public:
       int cs = audio_block->length;  //How many audio samples to process?
       
       //copy local to global
-      afc = local_afc;  dsl = local_dsl;  agc = local_agc;  ///////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
-      
+      memcpy(&afc, &local_afc, sizeof(CHA_AFC));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      memcpy(&dsl, &local_dsl, sizeof(CHA_DSL));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      memcpy(&agc, &local_agc, sizeof(CHA_WDRC)); //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      prepared = local_prepared; //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!!  
+        
       //hopefully, this one line is all that needs to change to reflect what CHAPRO code you want to use
       process_chunk(cp, x, x, cs); //see test_gha.h  (or whatever test_xxxx.h is #included at the top)
       
       //copy global back to local
-      local_afc = afc;  local_dsl = dsl;  local_agc = agc;  ///////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!!  
-
+      memcpy(&local_afc, &afc, sizeof(CHA_AFC));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      memcpy(&local_dsl, &dsl, sizeof(CHA_DSL));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      memcpy(&local_agc, &agc, sizeof(CHA_WDRC)); //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      local_prepared = prepared; //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      
     } //end of applyMyAlgorithms
     // /////////// End of the signal processing code that references CHAPRO
 
