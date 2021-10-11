@@ -676,6 +676,19 @@ configure_feedback()
         afc.eps = 0.000927518; // power threshold
         afc.mu = 0.000255915;  // step size
     }
+
+    #if 1
+      //WEA debugging AFC parameters
+      printf("test_gha: configure_feedback: using WEA Debug Settings for AFC...\n");
+      afc.afl = 0;  //set to zero to turn off?
+      afc.wfl = 0;
+      afc.pfl = 0;
+      afc.mu = 1.0e-3;
+      afc.rho = 1.0 - 0.9;
+      afc.eps = 0.008;
+      //end WEA debugging
+    #endif
+    
     afc.pup = 1;  // band-limit update period
     afc.hdel = 0; // output/input hardware delay
     afc.sqm = 0;  // save quality metric ?
