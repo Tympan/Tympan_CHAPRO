@@ -65,7 +65,7 @@ void SerialManager::printHelp(void) {
   Serial.println("   e/E: incr/decrease eps (current: " + String((float)(BTNRH_alg1.get_cha_dvar(_eps)),8) + ")");
   Serial.println("   s/S: print left or right AFC settings.");
   Serial.println("   q/Q: reset left or right feedback model.");
-  Serial.println("   f/F: print left or right feedback model.  Print ONCE.");
+  Serial.println("   f/F: print left or right feedback model.  Prints ONCE.");
   Serial.println("   d/D: start/stop REPEATED printing of LEFT feedback model.");
   Serial.println("   g/G: start/stop REPEATED printing of RIGHT feedback model.");
 
