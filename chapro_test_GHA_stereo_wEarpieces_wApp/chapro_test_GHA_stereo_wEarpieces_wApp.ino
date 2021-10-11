@@ -56,11 +56,9 @@ void setupSerialManager(void) {
 
 // define the setup() function, the function that is called once when the device is booting
 void setup() {
-  //begin the serial comms (for debugging)
   //myTympan.beginBothSerial(); delay(1000);
-  Serial1.begin(9600); delay(1000); //for talking to the Bluetooth unit (9600 is the right choice for for RevE)
-  
   if (Serial) Serial.print(CrashReport);  //if it crashes and restarts, this will give some info
+  Serial1.begin(9600); delay(1000); //for talking to the Bluetooth unit (9600 is the right choice for for RevE)
   Serial.println("CHAPRO for Tympan: Test GHA Earpiece Mixer with App: setup():...");
   Serial.println("  Sample Rate (Hz): " + String(audio_settings.sample_rate_Hz));
   Serial.println("  Audio Block Size (samples): " + String(audio_settings.audio_block_samples));
