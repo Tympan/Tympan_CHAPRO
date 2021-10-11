@@ -39,11 +39,14 @@ static double srate = 24000; // sampling rate (Hz)
 static int chunk = 32;       // chunk size
 static int prepared = 0;
 //static int io_wait = 40;
+#define use_args
+#ifdef use_args
 static struct
 {
     char *ifn, *ofn, simfb, afc, mat, nrep, play;
     int afl, wfl, pfl;
 } args;
+#endif
 static CHA_AFC afc = {0};
 static CHA_DSL dsl = {0};
 static CHA_WDRC agc = {0};
@@ -117,17 +120,20 @@ process_chunk(CHA_PTR cp, float *x, float *y, int cs)
 //    return (0);
 //}
 //
-//static void
-//parse_args(int ac, char *av[])
-//{
-//    args.afc = 1;
-//    args.mat = 1;
-//    args.play = 0;
-//    args.nrep = 1;
-//    args.simfb = 1;
-//    args.afl = -1;
-//    args.wfl = -1;
-//    args.pfl = -1;
+static void
+parse_args(int ac, char *av[])
+{  
+
+#ifdef use_args
+  
+    args.afc = 1;
+    args.mat = 1;
+    args.play = 0;
+    args.nrep = 1;
+    args.simfb = 1;
+    args.afl = -1;
+    args.wfl = -1;
+    args.pfl = -1;
 //    while (ac > 1)
 //    {
 //        if (av[1][0] == '-')
@@ -184,7 +190,11 @@ process_chunk(CHA_PTR cp, float *x, float *y, int cs)
 //    args.ofn = (ac > 2) ? _strdup(av[2]) : NULL;
 //    if (args.ofn)
 //        args.mat = mat_file(args.ofn);
-//}
+  args.ifn = NULL;
+  args.ofn = NULL;
+
+  #endif
+}
 //
 ///***********************************************************/
 //
@@ -645,6 +655,8 @@ configure_feedback()
     afc.afl = 45; // adaptive filter length
     afc.wfl = 9;  // whiten-filter length
     afc.pfl = 0;  // band-limit-filter length
+
+    #ifdef use_args
     // update args
     if (args.afl >= 0)
         afc.afl = args.afl;
@@ -653,6 +665,8 @@ configure_feedback()
     if (args.pfl >= 0)
         afc.pfl = args.pfl;
     afc.alf = 0; // band-limit update
+    #endif
+    
     if (afc.pfl)
     {                          // optimized for pfl=23
         afc.rho = 0.002577405; // forgetting factor
@@ -677,8 +691,11 @@ configure_feedback()
     afc.sqm = 1;  // save quality metric ?
     afc.fbg = 1;  // simulated-feedback gain
     afc.nqm = 0;  // initialize quality-metric length
+    
+    #ifdef use_args
     if (!args.simfb)
         afc.fbg = 0;
+    #endif
 }
 
 static void
