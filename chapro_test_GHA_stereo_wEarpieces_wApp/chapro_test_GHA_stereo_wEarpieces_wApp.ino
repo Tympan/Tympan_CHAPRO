@@ -50,7 +50,7 @@ void setupSerialManager(void) {
   //register all the UI elements here           //myState itself has some UI stuff we can use (like the CPU reporting!)
   serialManager.add_UI_element(&earpieceMixer);
   serialManager.add_UI_element(&audioSDWriter);
-  serialManager.add_UI_element(&ble);               //ble allows use to ask the status of bt/ble
+  //serialManager.add_UI_element(&ble);               //ble allows use to ask the status of bt/ble
   serialManager.add_UI_element(&myState);
 }
 
@@ -72,29 +72,15 @@ void setup() {
   // /////////////////////////////////////////////  do any setup of the algorithms
 
   Serial.println("setup(): calling BTNRH_alg setup for left instance..."); Serial.flush();
-  BTNRH_alg1.setup();  //in AudioEffectNFC.h
-  Serial.flush(); 
-
-  if (!BTNRH_alg1.setup_complete) {
-    Serial.println("setup: BTNRH_alg1 did not complete setup.  Retrying...");Serial.flush();
-    BTNRH_alg1.setup();        //in AudioEffectNFC.h
-    if (!BTNRH_alg1.setup_complete) Serial.println("setup: BTNRH_alg1 still did not complete setup.");Serial.flush();
-  }
-  
+  BTNRH_alg1.setup(); 
+  Serial.flush(); //try to ensure that any debugging messages are actually sent to Serial
+ 
   Serial.println("setup(): calling BTNRH_alg setup for right instance..."); Serial.flush();
-  BTNRH_alg2.setup(); //in AudioEffectNFC.h
-  Serial.flush();
-    
-  if (!BTNRH_alg2.setup_complete) {
-    Serial.println("setup: BTNRH_alg2 did not complete setup.  Retrying...");Serial.flush();
-    BTNRH_alg2.setup();        //in AudioEffectNFC.h
-    if (!BTNRH_alg2.setup_complete) Serial.println("setup: BTNRH_alg2 still did not complete setup.");Serial.flush();
-  } else {
-    Serial.println("setup: BTNRH_alg2 completed setup.");Serial.flush();
-  }
+  BTNRH_alg2.setup();
+  Serial.flush(); //try to ensure that any debugging messages are actually sent to Serial
 
-  BTNRH_alg1.setEnabled(true);  //see AudioEffectNFC.h.  This could be done later in setup()
-  BTNRH_alg2.setEnabled(true);  //see AudioEffectNFC.h.  This could be done later in setup()
+  BTNRH_alg1.setEnabled(true);  //This could be done later in setup()
+  BTNRH_alg2.setEnabled(true);  //This could be done later in setup()
  
   // //////////////////////////////////////////// End setup of the algorithms
 
@@ -173,4 +159,31 @@ void loop() {
   if (myState.flag_printCPUandMemory) myState.printCPUandMemory(millis(), 3000); //print every 3000msec  (method is built into TympanStateBase.h, which myState inherits from)
   if (myState.flag_printCPUandMemory) myState.printCPUtoGUI(millis(), 3000);     //send to App every 3000msec (method is built into TympanStateBase.h, which myState inherits from)
 
+  if (myState.flag_printLeftFeedbackModel) servicePrintingFeedbackModel(millis(),1500, BTNRH_alg1);
+  if (myState.flag_printRightFeedbackModel) servicePrintingFeedbackModel(millis(),1500, BTNRH_alg2);
 } //end loop();
+
+// ////////////////////////////////////////////////////////////// Servicing routines
+
+void servicePrintingFeedbackModel(unsigned long curTime_millis, unsigned long updatePeriod_millis, AudioEffectBTNRH &alg) {
+  static unsigned long lastUpdate_millis = 0;
+  //has enough time passed to update everything?
+  if (curTime_millis < lastUpdate_millis) lastUpdate_millis = 0; //handle wrap-around of the clock
+  if ((curTime_millis - lastUpdate_millis) >= updatePeriod_millis) { //is it time to update the user interface?
+
+    int n_coeff = alg.get_cha_ivar(_afl);
+    if (n_coeff > 0) {
+      Serial.println("servicePrintingFeedbackModel: printing feedback model for AFC...");
+      float *efbp = (float *)(alg.cp[_efbp]);
+      for (int i=0; i<n_coeff; i++) { 
+        Serial.println(efbp[i],6); //print x decimal places
+        //if (i < n_coeff-1) Serial.print(", ");
+      }
+      //Serial.println();
+    } else {
+      Serial.println("servicePrintingFeedbackModel: printing feedback model for AFC...AFC is disabled.");
+    }
+
+    lastUpdate_millis = curTime_millis; //we will use this value the next time around.
+  }
+}

@@ -24,7 +24,7 @@
 
 class AudioEffectBTNRH : public AudioStream_F32
 {
-public:
+  public:
     //constructor
     AudioEffectBTNRH(const AudioSettings_F32 &settings) : AudioStream_F32(1, inputQueueArray_f32){ };
 
@@ -45,6 +45,26 @@ public:
     double set_cha_dvar(int ind, double val) { return ((double *)cp[_dvar])[ind] = val; };
     int get_cha_ivar(int ind) { return ((int *)cp[_ivar])[ind]; }; 
     int set_cha_ivar(int ind, int val) { return ((int *)cp[_ivar])[ind] = val; };
+
+    //methods to reset state
+    void reset_feedback_model(void) {
+      int n_coeff = get_cha_ivar(_afl);
+      float *efbp = (float *)cp[_efbp];
+      for (int i=0; i<n_coeff;i++) efbp[i]=0.0f;
+    }
+
+    //methods to print AFC parameters
+    void print_afc_params(void) {
+      Serial.println("AFC: afl = " + String(get_cha_ivar(_afl)));
+      Serial.println("AFC: wfl= " + String(get_cha_ivar(_wfl)));
+      Serial.println("AFC: pfl = " + String(get_cha_ivar(_pfl)));
+      Serial.println("AFC: fbl = " + String(get_cha_ivar(_fbl)));
+      Serial.println("AFC: mu = " + String(get_cha_dvar(_mu),8));
+      Serial.println("AFC: rho = " + String(get_cha_dvar(_rho),8));
+      Serial.println("AFC: eps = " + String(get_cha_dvar(_eps),8));
+      Serial.println("AFC: alf = " + String(get_cha_dvar(_alf),8));
+      Serial.println("AFC: fbm = " + String(get_cha_dvar(_fbm),8));      
+    }
 
     bool setup_complete = false;
 
@@ -120,7 +140,7 @@ public:
 
     bool setEnabled(bool val = true) { return enabled = val; }
     
-private:
+  private:
     //state-related variables
     audio_block_f32_t *inputQueueArray_f32[1]; //memory pointer for the input to this module
     bool enabled = false;

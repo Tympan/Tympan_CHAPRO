@@ -32,6 +32,8 @@ extern AudioEffectBTNRH BTNRH_alg1, BTNRH_alg2;
 class SerialManager : public SerialManagerBase  {  // see Tympan_Library for SerialManagerBase for more functions!
   public:
     SerialManager(BLE *_ble) : SerialManagerBase(_ble) {};
+
+    void printFeedbackCoeff(AudioEffectBTNRH &alg);
       
     void printHelp(void);
     void createTympanRemoteLayout(void); 
@@ -43,6 +45,7 @@ class SerialManager : public SerialManagerBase  {  // see Tympan_Library for Ser
     void updateGainDisplay(void);
     void updateCpuDisplayOnOff(void);
     void updateCpuDisplayUsage(void);
+    
 
   private:
 
@@ -53,11 +56,18 @@ class SerialManager : public SerialManagerBase  {  // see Tympan_Library for Ser
 
 void SerialManager::printHelp(void) {  
   Serial.println("SerialManager Help: Available Commands:");
-  Serial.println(" Info: BTNRH_alg1 setup complete = " + String(BTNRH_alg1.setup_complete) + ", BTNRH_alg2 setup complete = " + String(BTNRH_alg2.setup_complete));
   Serial.println(" h: Print this help");
-  Serial.println(" m/M: AFC: incr/decrease mu (current: " + String((float)(BTNRH_alg1.get_cha_dvar(_mu)),8) + ")");
-  Serial.println(" r/R: AFC: incr/decrease rho (current: " + String((float)(BTNRH_alg1.get_cha_dvar(_rho)),8) + ")");
-  Serial.println(" e/E: AFC: incr/decrease eps (current: " + String((float)(BTNRH_alg1.get_cha_dvar(_eps)),8) + ")");
+  Serial.println(" Static Info: ");
+  Serial.println("      : BTNRH_alg1 setup complete = " + String(BTNRH_alg1.setup_complete) + ", BTNRH_alg2 setup complete = " + String(BTNRH_alg2.setup_complete));
+  Serial.println(" AFC: (no prefix)");
+  Serial.println("   m/M: incr/decrease mu (current: " + String((float)(BTNRH_alg1.get_cha_dvar(_mu)),8) + ")");
+  Serial.println("   r/R: incr/decrease rho (current: " + String((float)(BTNRH_alg1.get_cha_dvar(_rho)),8) + ")");
+  Serial.println("   e/E: incr/decrease eps (current: " + String((float)(BTNRH_alg1.get_cha_dvar(_eps)),8) + ")");
+  Serial.println("   s/S: print left or right AFC settings.");
+  Serial.println("   q/Q: reset left or right feedback model.");
+  Serial.println("   f/F: print left or right feedback model.  Print ONCE.");
+  Serial.println("   d/D: start/stop REPEATED printing of LEFT feedback model.");
+  Serial.println("   g/G: start/stop REPEATED printing of RIGHT feedback model.");
 
   //Add in the printHelp() that is built-into the other UI-enabled system components.
   //The function call below loops through all of the UI-enabled classes that were
@@ -116,7 +126,47 @@ bool SerialManager::processCharacter(char c) {  //this is called by SerialManage
       BTNRH_alg1.set_cha_dvar(ind, new_val);  BTNRH_alg2.set_cha_dvar(ind, new_val);
       BTNRH_alg1.set_cha_ivar(_in1, 0); BTNRH_alg2.set_cha_ivar(_in1, 0);  //command afc_process to re-initialize its parameters
       myTympan.print("Command received: changing AFC eps to "); myTympan.println(BTNRH_alg1.get_cha_dvar(ind),7);
+      break;
+    case 'q':
+      Serial.println("SerialManager: command received...reseting LEFT AFC feedback model...");
+      BTNRH_alg1.reset_feedback_model();
+      break;
+    case 'Q':
+      Serial.println("SerialManager: command received...reseting RIGHT AFC feedback model...");
+      BTNRH_alg2.reset_feedback_model();
       break;    
+    case 's':
+      Serial.println("SerialManager: command received...print settings for LEFT AFC:");
+      BTNRH_alg1.print_afc_params();
+      break;
+    case 'S':
+      Serial.println("SerialManager: command received...print settings for RIGHT AFC:");
+      BTNRH_alg2.print_afc_params();
+      break;
+    case 'f':
+      Serial.println("SerialManager: command received...feedback model for LEFT channel:");
+      printFeedbackCoeff(BTNRH_alg1);
+      break;
+    case 'F':
+      Serial.println("SerialManager: command received...feedback model for RIGHT channel:");
+      printFeedbackCoeff(BTNRH_alg2);
+      break;
+    case 'd':
+      Serial.println("SerialManager: START printing feedback model for LEFT channel...");
+      myState.flag_printLeftFeedbackModel = true;
+      break;
+    case 'D':
+      Serial.println("SerialManager: STOP printing feedback model for LEFT channel...");
+      myState.flag_printLeftFeedbackModel = false;
+      break;
+    case 'g':
+      Serial.println("SerialManager: START printing feedback model for LEFT channel...");
+      myState.flag_printRightFeedbackModel = true;
+      break;
+    case 'G':
+      Serial.println("SerialManager: STOP printing feedback model for LEFT channel...");
+      myState.flag_printRightFeedbackModel = false;
+      break;
     case 'J': case 'j':           //The TympanRemote app sends a 'J' to the Tympan when it connects
       printTympanRemoteLayout();  //in resonse, the Tympan sends the definition of the GUI that we'd like
       break;
@@ -130,7 +180,15 @@ bool SerialManager::processCharacter(char c) {  //this is called by SerialManage
   return ret_val;
 }
 
-
+void SerialManager::printFeedbackCoeff(AudioEffectBTNRH &alg) {
+  int n_coeff = alg.get_cha_ivar(_afl);
+  float *efbp = (float *)(alg.cp[_efbp]);
+  for (int i=0; i<n_coeff; i++) { 
+    Serial.print(efbp[i],6); 
+    if (i < n_coeff-1) Serial.print(", ");
+  }
+  Serial.println();
+}
 
 // //////////////////////////////////  Methods for defining the GUI and transmitting it to the App
 

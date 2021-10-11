@@ -25,6 +25,8 @@ class State : public TympanStateBase_UI { // look in TympanStateBase or TympanSt
     State(AudioSettings_F32 *given_settings, Print *given_serial, SerialManagerBase *given_sm) : TympanStateBase_UI(given_settings, given_serial, given_sm) {}
 
     //look in TympanStateBase for more state variables!  (like, bool flag_printCPUandMemory)
+    bool flag_printLeftFeedbackModel = false;
+    bool flag_printRightFeedbackModel = false;
     
     //Put different gain settings here to ease the updating of the GUI
     //float input_gain_dB = 10.0;   //gain of the hardware PGA in the AIC
@@ -32,6 +34,7 @@ class State : public TympanStateBase_UI { // look in TympanStateBase or TympanSt
     
     //algorithm parameters
     float cutoff_Hz = 1000.0;    //default cutoff value of the highpass filter
+    
 
     //Other classes holding states
     EarpieceMixerState *earpieceMixer;

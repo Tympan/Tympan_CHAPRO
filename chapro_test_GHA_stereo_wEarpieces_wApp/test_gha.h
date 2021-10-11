@@ -677,7 +677,7 @@ configure_feedback()
         afc.mu = 0.000255915;  // step size
     }
 
-    #if 1
+    #if 0
       //WEA debugging AFC parameters
       printf("test_gha: configure_feedback: using WEA Debug Settings for AFC...\n");
       afc.afl = 0;  //set to zero to turn off?
