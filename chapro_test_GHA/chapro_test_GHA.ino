@@ -45,8 +45,10 @@ AudioConnection_F32 patchCord12(BTNRH_alg1, 0, audio_out,  1);  //right output, 
 // /////////////////////////  Start the Arduino-standard functions: setup() and loop()
 
 void setup() { //this runs once at startup
-  
-    myTympan.beginBothSerial(); delay(500);
+
+    while ((!Serial) && (millis() < 1000));  //stall for a bit to let the USB get up and running.
+    //myTympan.beginBothSerial(); delay(500);
+    
     if (Serial) Serial.print(CrashReport);  //if it crashes and restarts, this will give some info
     myTympan.println("CHAPRO for Tympan: Test GHA: setup():...");
     myTympan.println("  Sample Rate (Hz): " + String(audio_settings.sample_rate_Hz));
