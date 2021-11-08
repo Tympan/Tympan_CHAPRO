@@ -33,7 +33,7 @@ class State : public TympanStateBase_UI { // look in TympanStateBase or TympanSt
     float output_gain_dB = 0.0;  //gain of the hardware headphone amplifier in the AIC
     
     //algorithm parameters
-    float cutoff_Hz = 1000.0;    //default cutoff value of the highpass filter
+    //float cutoff_Hz = 1000.0;    //default cutoff value of the highpass filter
     
 
     //Other classes holding states
