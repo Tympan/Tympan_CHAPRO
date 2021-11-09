@@ -18,9 +18,22 @@ public:
     //CHAPRO-relevant data members
     void *cp[NPTR] = {0};  //Create a local version of CHA_PTR for use by each instance of this class.  NPTR is set in chapro.h???
     I_O io;                //Create a local version of I_O for use by each instance of this class.
+    int local_prepared = 0;
+    CHA_AFC local_afc = {0};     ////////////////////////////////////////// Add or remove based on *your* CHAPRO Algorithm!!!!
+    CHA_DSL local_dsl = {0};     ////////////////////////////////////////// Add or remove based on *your* CHAPRO Algorithm!!!!
+    CHA_WDRC local_agc = {0};    ////////////////////////////////////////// Add or remove based on *your* CHAPRO Algorithm!!!!
 
     //setup methods
-    void setup(void)  { 
+    bool setup_complete = false;    
+    void setup(void)  {
+
+      //copy local to global.  Assume that the global functions (configure() and prepare()) will define the globals
+      //afc = local_afc;  dsl = local_dsl;  agc = local_agc;  
+      memcpy(&afc, &local_afc, sizeof(CHA_AFC));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      memcpy(&dsl, &local_dsl, sizeof(CHA_DSL));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      memcpy(&agc, &local_agc, sizeof(CHA_WDRC)); //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      prepared = local_prepared; //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!!  
+       
       Serial.println("AudioEffectBTNRH: setup(): BTNRH configure...");
       configure(&io);               //in test_gha.h
     
