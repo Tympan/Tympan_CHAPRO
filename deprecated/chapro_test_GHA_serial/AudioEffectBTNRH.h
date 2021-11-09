@@ -67,40 +67,38 @@ class AudioEffectBTNRH_F32 : public AudioStream_F32
       Serial.println("AFC: fbm = " + String(get_cha_dvar(_fbm),8));      
     }
 
-    bool setup_complete = false;
-
     //setup methods
+    bool setup_complete = false;
     void setup(void)  { 
 
-      //copy local to global...NO.  Assume that the global functions (configure() and prepare()) will define the globals
-      //afc = local_afc;  dsl = local_dsl;  agc = local_agc;  
-      memcpy(&afc, &local_afc, sizeof(CHA_AFC));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
-      memcpy(&dsl, &local_dsl, sizeof(CHA_DSL));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
-      memcpy(&agc, &local_agc, sizeof(CHA_WDRC)); //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
-      prepared = local_prepared; //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!!  
+      //copy local copies out to the global instances prior to setup?  NO.  Assume that the global functions (configure() and prepare()) will define the globals
+      //memcpy(&afc, &local_afc, sizeof(CHA_AFC));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      //memcpy(&dsl, &local_dsl, sizeof(CHA_DSL));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      //memcpy(&agc, &local_agc, sizeof(CHA_WDRC)); //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
+      //prepared = local_prepared; //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!!  
 
+      //run the configure() and prepare() functions in the global space
       configure(&io);               //in test_gha.h
       prepare(&io, cp);             //in test_gha.h
 
-      //copy global back to local
+      //copy global instances back to local instances for safe-keeping (not really needed for monural operation, but some day this will be important for binaural
       memcpy(&local_afc, &afc, sizeof(CHA_AFC));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
       memcpy(&local_dsl, &dsl, sizeof(CHA_DSL));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
       memcpy(&local_agc, &agc, sizeof(CHA_WDRC)); //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
       local_prepared = prepared; //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!!  
 
 
-      //overrite settings
+      //over-write some of the settings?
       Serial.println("AudioEffectBTNRH: setup(): overwriting settings...");
-      //set_cha_ivar( _afl, 60); //default was 45?
-      //set_cha_ivar( _wfl, 0);  //default 9
-      //set_cha_ivar( _pfl, 0);  //default 0
-      //set_cha_ivar( _fbl, 0);  //default 0
-      //set_cha_dvar(  _mu, 0.0001f);  //1e-3 is too hot
-      //set_cha_dvar( _rho, 0.9f  );  
-      //set_cha_dvar( _eps, 0.008f); 
-      set_cha_ivar( _in1, 0     );  //command afc_process to re-initialize its parameters
+      //set_cha_ivar( _afl, 60); //default was 45.  I don't think that it's legal to overwrite this...at least, not to make it bigger
+      //set_cha_ivar( _wfl, 0);  //default 9. I don't think that it's legal to overwrite this...at least, not to make it bigger
+      //set_cha_ivar( _pfl, 0);  //default 0. I don't think that it's legal to overwrite this...at least, not to make it bigger
+      //set_cha_ivar( _fbl, 0);  //default 0. I don't think that it's legal to overwrite this...at least, not to make it bigger
+      //set_cha_dvar(  _mu, 0.0001f);  //I think that this can be overwritten safely.
+      //set_cha_dvar( _rho, 0.9f  );   //I think that this can be overwritten safely.
+      //set_cha_dvar( _eps, 0.008f);   //I think that this can be overwritten safely.
+      set_cha_ivar( _in1, 0     );     //if anything is changed, command afc_process to re-initialize its parameters
       
-
       setup_complete = true;
     }    
     
@@ -113,7 +111,7 @@ class AudioEffectBTNRH_F32 : public AudioStream_F32
       int cs = audio_block->length;  //How many audio samples to process?
       
       
-      //copy local to global
+      //copy local copies to global instances before calling functions in the global scope
       memcpy(&afc, &local_afc, sizeof(CHA_AFC));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
       memcpy(&dsl, &local_dsl, sizeof(CHA_DSL));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
       memcpy(&agc, &local_agc, sizeof(CHA_WDRC)); //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
@@ -122,7 +120,7 @@ class AudioEffectBTNRH_F32 : public AudioStream_F32
       //hopefully, this one line is all that needs to change to reflect what CHAPRO code you want to use
       process_chunk(cp, x, x, cs); //see test_gha.h  (or whatever test_xxxx.h is #included at the top)
 
-      //copy global back to local
+      //copy global instances back to local copies after completing the functions that are in the global scope
       memcpy(&local_afc, &afc, sizeof(CHA_AFC));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
       memcpy(&local_dsl, &dsl, sizeof(CHA_DSL));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
       memcpy(&local_agc, &agc, sizeof(CHA_WDRC)); //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
