@@ -643,48 +643,41 @@ configure_compressor()
 static void
 configure_feedback()
 {
-    // AFC parameters
-    afc.afl = 45; // adaptive filter length...was 45
-    afc.wfl = 5;  // whiten-filter length...originally 9, but Steve suggested 5 along with pfl of 36 in email 10/9/2021
-    afc.pfl = 36;  // band-limit-filter length...originally 0, but Steve suggested 36 with wfl of 9 in email 10/9/2021
-    // update args
-//    if (args.afl >= 0)
-//        afc.afl = args.afl;
-//    if (args.wfl >= 0)
-//        afc.wfl = args.wfl;
-//    if (args.pfl >= 0)
-//        afc.pfl = args.pfl;
-    afc.alf = 0; // band-limit update
-    
-    if (afc.pfl)
-    {                          // optimized for pfl=23
-        afc.rho = 0.002577405; // forgetting factor
-        afc.eps = 0.000008689; // power threshold
-        afc.mu = 0.000050519;  // step size
-        afc.alf = 0.000001825; // band-limit update
-    }
-    else if (afc.wfl)
-    {
-        afc.rho = 0.000360459; // forgetting factor
-        afc.eps = 0.000018848; // power threshold
-        afc.mu = 0.000048112;  // step size
-    }
-    else
-    {
-        afc.rho = 0.000169571; // forgetting factor
-        afc.eps = 0.000927518; // power threshold
-        afc.mu = 0.000255915;  // step size
-    }
-    
-    afc.pup = 1;  // band-limit update period
-    //afc.hdel = 0; // output/input hardware delay
-    afc.hdel = 38 + 2*chunk; // output/input hardware delay.  Tympan has a hardware delay of 17+21 = 38 samples plus the I2S buffering is 2 block sizes
-    
-    afc.sqm = 0;  // save quality metric ?
-    //afc.fbg = 1;  // simulated-feedback gain
-    afc.nqm = 0;  // initialize quality-metric length
-    //if (!args.simfb)
-        afc.fbg = 0;  //zero synthetic feedback
+  switch (2) {
+    case 1:
+      // AFC parameters...original plus update on 10/9/2021...As of 11/17, WEA thinks that this sounds better than the settings on 11/9, below
+      afc.afl = 45;           // adaptive filter length...was 45
+      afc.wfl = 5;            // whiten-filter length...originally 9, but Steve suggested 5 along with pfl of 36 in email 10/9/2021
+      afc.pfl = 36;           // band-limit-filter length...originally 0, but Steve suggested 36 with wfl of 9 in email 10/9/2021
+      afc.rho = 0.002577405;  // forgetting factor   (WEA: optimized for pfl=23??)
+      afc.eps = 0.000008689;  // power threshold   (WEA: optimized for pfl=23??)
+      afc.mu = 0.000050519;   // step size   (WEA: optimized for pfl=23??)
+      afc.alf = 0.000001825;  // band-limit update   (WEA: optimized for pfl=23??)
+      afc.pup = 1;            // band-limit update period
+      break;    
+    case 2:
+      // AFC parameters...per email from Steve on 11/9/2021
+      afc.afl  = 42;          // adaptive filter length
+      afc.wfl  = 9;           // whiten filter length
+      afc.pfl  = 20;          // band-limit filter length
+      afc.rho  = 0.007218985; // forgetting factor 
+      afc.eps  = 0.000919300; // power threshold
+      afc.mu   = 0.004607254; // step size
+      afc.alf  = 0.000010658; // band-limit update
+      afc.pup  = 8;           // band-limit update period 
+      break;
+    default:
+      Serial.println("test_gha: configure_feedback: *** ERROR ***: AFC is not configured.");
+  }
+  
+  //afc.hdel = 0; // output/input hardware delay
+  afc.hdel = 38 + 2*chunk; // output/input hardware delay.  Tympan has a hardware delay of 17+21 = 38 samples plus the I2S buffering is 2 block sizes
+  
+  afc.sqm = 0;  // save quality metric ?
+  //afc.fbg = 1;  // simulated-feedback gain
+  afc.nqm = 0;  // initialize quality-metric length
+  //if (!args.simfb)
+      afc.fbg = 0;  //zero synthetic feedback
 }
 
 static void

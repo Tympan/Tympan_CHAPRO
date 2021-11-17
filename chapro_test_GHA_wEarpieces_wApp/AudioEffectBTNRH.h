@@ -77,18 +77,6 @@ class AudioEffectBTNRH_F32 : public AudioStream_F32
       memcpy(&local_dsl, &dsl, sizeof(CHA_DSL));  //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
       memcpy(&local_agc, &agc, sizeof(CHA_WDRC)); //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!! 
       local_prepared = prepared; //////////////////// Add or remove items based on *your* CHAPRO Algorithm!!!!  
-
-
-      //over-write some of the settings?
-      Serial.println("AudioEffectBTNRH: setup(): overwriting settings...");
-      //set_cha_ivar( _afl, 60); //default was 45.  I don't think that it's legal to overwrite this...at least, not to make it bigger
-      //set_cha_ivar( _wfl, 0);  //default 9. I don't think that it's legal to overwrite this...at least, not to make it bigger
-      //set_cha_ivar( _pfl, 0);  //default 0. I don't think that it's legal to overwrite this...at least, not to make it bigger
-      //set_cha_ivar( _fbl, 0);  //default 0. I don't think that it's legal to overwrite this...at least, not to make it bigger
-      //set_cha_dvar(  _mu, 0.0001f);  //I think that this can be overwritten safely.
-      //set_cha_dvar( _rho, 0.9f  );   //I think that this can be overwritten safely.
-      //set_cha_dvar( _eps, 0.008f);   //I think that this can be overwritten safely.
-      set_cha_ivar( _in1, 0     );     //if anything is changed, command afc_process to re-initialize its parameters
       
       setup_complete = true;
     }    
@@ -224,7 +212,7 @@ bool AudioEffectBTNRH_F32::servicePrintingFeedbackModel_toApp(unsigned long curT
     //lastUpdate_millis = curTime_millis; //we will use this value the next time around.
     lastUpdate_millis = millis(); //change the timing so that there are XXXX msec *between* the end of one transmission and the start of the next
   }
-  return true;
+  return ret_val;
 }
 
 #endif

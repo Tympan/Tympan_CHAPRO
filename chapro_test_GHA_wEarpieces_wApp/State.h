@@ -27,7 +27,7 @@ class State : public TympanStateBase_UI { // look in TympanStateBase or TympanSt
     //bool flag_printRightFeedbackModel = false;
     
     //Put different gain settings here to ease the updating of the GUI
-    float digital_gain_dB = -10.0;
+    float digital_gain_dB = 0.0;
     float output_gain_dB = 0.0;  //gain of the hardware headphone amplifier in the AIC   
 
     //Other classes holding states
