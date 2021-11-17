@@ -164,7 +164,6 @@ void loop() {  //this runs forever in a loop
   //periodically print the AFC model coefficients
   if (myState.flag_printLeftFeedbackModel) BTNRH_alg1.servicePrintingFeedbackModel(millis(), 1000);
   if (myState.flag_printLeftFeedbackModel_toApp) {
-    bool did_it_print = BTNRH_alg1.servicePrintingFeedbackModel_toApp(millis(), 1000, ble); //BLE transfer is slow, this this ends up spacing transmissions as starting a new one after 1000msec has passed since end of previous one
-    //if (did_it_print) myState.flag_printLeftFeedbackModel_toApp = false;  //print it just once and then let's force it to be done
+   BTNRH_alg1.servicePrintingFeedbackModel_toApp(millis(), 1000, ble); //BLE transfer is slow, this this ends up spacing transmissions as starting a new one after 1000msec has passed since end of previous one
   }
 }
