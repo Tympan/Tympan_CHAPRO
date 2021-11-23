@@ -60,6 +60,12 @@ class AudioEffectBTNRH_F32 : public AudioStream_F32
       for (int i=0; i<n_coeff;i++) efbp[i]=0.0f;
     }
 
+    //enable different parts of the algorithm
+    bool setEnabled(bool val = true) { return enabled = val; }  //overall enabled or not
+    bool setAfcEnabled(bool _enable);
+    bool getAfcEnabled(void) { int cur_mxl = get_cha_ivar(_mxl); if (cur_mxl > 0) { return true; } else { return false; } };
+    int baselineVal_mxl = -1;
+
     //setup methods
     bool setup_complete = false;
     void setup(void)  { 
@@ -133,7 +139,6 @@ class AudioEffectBTNRH_F32 : public AudioStream_F32
         AudioStream_F32::release(audio_block);
     }
 
-    bool setEnabled(bool val = true) { return enabled = val; }
     
   private:
     //state-related variables
@@ -178,6 +183,30 @@ void AudioEffectBTNRH_F32::print_afc_params(void) {
   Serial.println("AFC: fbm = " + String(get_cha_dvar(_fbm),8));      
 }
 
+//setAfcEnabled: enable or disable the AFC portion of the BTNRH algorithm.
+//  This is done by setting the "mxl" (max AFC filter length) to zero.
+//  To re-enable, we set the mxl back to its proper (non-zero) value
+bool AudioEffectBTNRH_F32::setAfcEnabled(bool _enable) {
+  int cur_mxl = get_cha_ivar(_mxl);
+  if (cur_mxl > 0) baselineVal_mxl = cur_mxl; //save the value for future use
+
+  if (_enable) { //we are asking to enable the AFC
+    if (cur_mxl <= 0) { //had it been disabled?
+      //it is currently disabled, so go ahead and enable it
+      if (baselineVal_mxl > 0) {  //is there a valid _mxl to enable it with?
+        //yes, there is a valid value to use  
+        set_cha_ivar(_mxl,baselineVal_mxl);
+      } else {
+        //no, there is not a valid value, so we cannot enable
+      }
+    } else { //it is already enabled, so nothing to do
+    }
+  } else { //we are asking to disable the afc
+    set_cha_ivar(_mxl,0);  //set to zero to disable
+  }
+
+  return getAfcEnabled();
+}
 
 bool AudioEffectBTNRH_F32::servicePrintingFeedbackModel(unsigned long curTime_millis, unsigned long updatePeriod_millis) {
   static unsigned long lastUpdate_millis = 0;

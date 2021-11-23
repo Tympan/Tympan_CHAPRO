@@ -46,6 +46,7 @@ class SerialManager : public SerialManagerBase  {  // see Tympan_Library for Ser
     void setFullGUIState(bool activeButtonsOnly = false);
     void updateGUI_gain(void);
     void updateGUI_AFCparams(void);
+    void updateGUI_AFCenabled(void);
     void updateGUI_AFCparams_constants(void);
 
   private:
@@ -66,6 +67,7 @@ void SerialManager::printHelp(void) {
   Serial.println("   k/K: incr/decrease gain (current: " + String(gain1.getGain_dB(),1) + " dB)");
   Serial.println("   z/Z: mute/unmute");
   Serial.println(" AFC Parameters: (no prefix)");
+  Serial.println("   x/X: enable/disable AFC");
   //Serial.println("   a/A: incr/decrease afl, model length (current: " + String(BTNRH_alg1.get_cha_ivar(_afl)) + ")");
   //Serial.println("   w/W: incr/decrease wfl, whiten filter length (current: " + String(BTNRH_alg1.get_cha_ivar(_wfl)) + ")");
   Serial.println("   m/M: incr/decrease mu, speed of adaptation, bigger is faster (current: " + String((float)(BTNRH_alg1.get_cha_dvar(_mu)),8) + ")");
@@ -119,6 +121,22 @@ bool SerialManager::processCharacter(char c) {  //this is called by SerialManage
       myTympan.println("Command received: unmuting (changing gain to " + String(new_val,1) + " dB)");;
       setDigitalGain_dB(new_val);
       break;  
+    case 'x':
+      { 
+        bool is_enabled = BTNRH_alg1.setAfcEnabled(true);
+        Serial.print("Command received: enabling AFC...");
+        if (is_enabled) { Serial.println("ENABLED."); } else { Serial.println("DISABLED."); }
+        updateGUI_AFCenabled(); 
+      }
+      break;
+    case 'X':
+      { 
+        bool is_enabled = BTNRH_alg1.setAfcEnabled(false);
+        Serial.print("Command received: disabling AFC..."); 
+        if (is_enabled) { Serial.println("ENABLED."); } else { Serial.println("DISABLED."); }
+        updateGUI_AFCenabled(); 
+      }
+      break;
     case 'd':
       Serial.println("SerialManager: command received...print settings for LEFT DSL:");
       BTNRH_alg1.print_dsl_params();
@@ -299,10 +317,15 @@ void SerialManager::createTympanRemoteLayout(void) {
     //Add a button group for SD recording...use a button set that is built into AudioSDWriter_F32_UI for you!
     card_h = audioSDWriter.addCard_sdRecord(page_h);
 
+  //add a page for the earpiece selector
+  page_h = myGUI.addPage("Earpiece Mixer");
+
     //Add earpiece input selector
     card_h = earpieceMixer.addCard_audioSource(page_h); //use its predefined group of buttons for input audio source
 
   page_h = myGUI.addPage("AFC Parameters");
+    card_h = page_h->addCard("AFC Active");
+      card_h->addButton("On","x","afcOn",6);card_h->addButton("Off","X","afcOff",6);
     card_h = page_h->addCard("Mu (Step Size)");
       card_h->addButton("-","M","",2);card_h->addButton("","","valMu",8);card_h->addButton("+","m","",2);
     card_h = page_h->addCard("Eps (Power Tolerance)");      
@@ -347,11 +370,16 @@ void SerialManager::setFullGUIState(bool activeButtonsOnly) {  //the "activeButt
   //update the local fields
   updateGUI_gain();
   updateGUI_AFCparams();
+  updateGUI_AFCenabled();
   updateGUI_AFCparams_constants();
 }
 
 void SerialManager::updateGUI_gain(void) {
   setButtonText("digGain",String(myState.digital_gain_dB,1)); //button name, new button text
+}
+void SerialManager::updateGUI_AFCenabled(void) {
+  setButtonState("afcOn",BTNRH_alg1.getAfcEnabled());
+  setButtonState("afcOff",!BTNRH_alg1.getAfcEnabled());
 }
 void SerialManager::updateGUI_AFCparams(void) {
   setButtonText("valMu",String((float)(BTNRH_alg1.get_cha_dvar(_mu)),8));    //button name, new button text
