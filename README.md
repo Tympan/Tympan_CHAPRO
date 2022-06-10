@@ -16,7 +16,7 @@ The short version is:
 
 ## SETUP Step 2: Get the special branch of the CHAPRO Repository
 
-This repository depends upona Arduino-enabled version of the BTNRH CHAPRO library.  Use the `tympan` branch of our fork of the CHAPRO library here: https://github.com/Tympan/chapro/tree/tympan
+This repository depends upon a Arduino-enabled version of the BTNRH CHAPRO library.  Use the `tympan` branch of our fork of the CHAPRO library here: https://github.com/Tympan/chapro/tree/tympan
 
 You must clone (or manually download and unzip) this specific branch of the chapro repo into your Arduino libraries directory.  On a Windows computer, the Arduino libraries directory is in Documents\Arduino\Libraries.  The final path, therefore, should be something like Documents\Arduino\Libraries\chapro
 
