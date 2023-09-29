@@ -34,10 +34,6 @@ You can then open these examples in the Arduino IDE via the "File Menu" and "Ope
 
 **Tympan Version:** These sketches are made for Tympan RevE.  They will compile and start to run on a Tympan RevD, but the Tympan RevD is too slow to execute most of the algorithms as they are written in CHAPRO.  
 
-**Tympan Earpieces:** Initially (as of 8/26/2021) these sketches do not employ the Tympan earpieces.  They default to using the microphones built into the hardware, so they will be noisy.  The processed audio is presented via the black headphone jack.
-
-We plan on adding support for the earpieces shortly.
-
 ## COMPILING
 
 If you have never compiled and run a Tympan program before, you should see the Tympan Getting Started docs.  The short version, however, is:
